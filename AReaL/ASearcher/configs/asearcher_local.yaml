@@ -34,7 +34,7 @@ gconfig:
 actor:
   experiment_name: ${experiment_name}
   trial_name: ${trial_name}
-  path: Qwen__Qwen2.5-7B
+  path: Qwen/Qwen2.5-1.5B
   init_from_scratch: false
   disable_dropout: true
   gradient_checkpointing: true
@@ -108,7 +108,7 @@ train_dataset:
   batch_size: 128
   shuffle: true
   pin_memory: true
-  path: path_to_training_data
+  path: /root/autodl-tmp/hub/datasets--inclusionAI--ASearcher-train-data/snapshots/2e1b758bd53a36c28cbe1d49776af35f95a9a4b0/ASearcher-Base-35k.jsonl
 
 # Utilities
 saver:

@@ -801,7 +801,7 @@ class AgentRLConfig(GRPOConfig):
             "help": "We could collect multiple trajectories for a single query. By default n_trajs=1."
         }
     )
-    search_server_type: str = field(
+    search_client_type: str = field(
         default="async-online-search-access",
         metadata={
             "help": "Type of tool (async-online-search-access/async-search-access). By default we use 'async-online-search-access'"
