@@ -77,10 +77,15 @@ Here `RAG_SERVER_ADDR_DIR` is the directory to dump the address of the launched 
 
 **Step 2**. Set up and launch the local RAG server
 
-+ Step 2.1. Download the [e5-base-v2](https://huggingface.co/intfloat/e5-base-v2) model, [e5 retriver index file, corpus file, and webpage file](https://huggingface.co/datasets/inclusionAI/ASearcher-Local-Knowledge)
++ Step 2.1. Download the [e5-base-v2](https://huggingface.co/intfloat/e5-base-v2) model, [corpus file and webpage file](https://huggingface.co/datasets/inclusionAI/ASearcher-Local-Knowledge)
 
++ Step 2.2 Build the index (need e5-base-v2 model and wiki corpus):
 
-+ Step 2.2. Launch the local RAG server
+```shell
+bash scripts/build_index.sh
+```
+
++ Step 2.3. Launch the local RAG server
 
 ```shell
 bash scripts/launch_local_server.sh $PORT $RAG_SERVER_ADDR_DIR
