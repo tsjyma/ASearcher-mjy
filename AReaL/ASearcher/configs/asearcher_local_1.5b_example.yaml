@@ -34,7 +34,7 @@ gconfig:
 actor:
   experiment_name: ${experiment_name}
   trial_name: ${trial_name}
-  path: Qwen/Qwen2.5-7B
+  path: Qwen/Qwen2.5-1.5B
   init_from_scratch: false
   disable_dropout: true
   gradient_checkpointing: true
@@ -151,8 +151,3 @@ launcher:
   
 
 max_turns: 32
-n_trajs: 16
-search_client_type: async-search-access
-reward_type: F1
-topk: 5
-valid_inst_ratio: 0.3
