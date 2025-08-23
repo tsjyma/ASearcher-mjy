@@ -787,6 +787,50 @@ class GRPOConfig(BaseExperimentConfig):
     actor: PPOActorConfig = field(default_factory=PPOActorConfig)
     ref: PPOActorConfig = field(default_factory=PPOActorConfig)
 
+@dataclass
+class AgentRLConfig(GRPOConfig):
+    max_turns: int = field(
+        default=128,
+        metadata={
+            "help": "maximum number of turns for search agent"
+        }
+    )
+    n_trajs: int = field(
+        default=1,
+        metadata={
+            "help": "We could collect multiple trajectories for a single query. By default n_trajs=1."
+        }
+    )
+    search_client_type: str = field(
+        default="async-online-search-access",
+        metadata={
+            "help": "Type of tool (async-online-search-access/async-search-access). By default we use 'async-online-search-access'"
+        }
+    )
+    reward_type: str = field(
+        default="F1",
+        metadata={
+            "help": "The type of reward function"
+        }
+    )
+    topk: int = field(
+        default=5,
+        metadata={
+            "help": "search returns the top-k results. Default top_k=5"
+        }
+    )
+    valid_inst_ratio: float = field(
+        default=1.0,
+        metadata={
+            "help": "We randomly force a ratio of queries to produce valid anwers. By default valid_inst_ratio=1.0"
+        }
+    )
+    recover_start_step: int = field(
+        default=0,
+        metadata={
+            "help": "The step to recover from"
+        }
+    )
 
 def parse_cli_args(argv: List[str]):
     parser = argparse.ArgumentParser()
