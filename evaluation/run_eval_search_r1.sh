@@ -4,9 +4,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 
-MODEL_PATH=/storage/openpsi/models/Qwen__Qwen2.5-7B-Instruct
+MODEL_PATH=/path/to/model
 
-DATA_DIR=/storage/openpsi/users/hechuyi/Agent/agent_eval@master/data
+DATA_DIR=/path/to/data
 
 SPLIT=1
 MAX_GEN_TOKENS=4097
