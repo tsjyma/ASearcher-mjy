@@ -9,10 +9,10 @@ MODEL_PATH=/path/to/model
 DATA_DIR=/path/to/data
 
 SPLIT=1
-MAX_GEN_TOKENS=4097
+MAX_GEN_TOKENS=4096
 DATA_NAMES=Bamboogle,NQ
-AGENT_TYPE=search-r1
-PROMPT_TYPE=local-rag
+AGENT_TYPE=asearcher
+PROMPT_TYPE=asearcher
 SEARCH_CLIENT_TYPE=async-search-access
 temperature=0.6
 top_p=0.95
