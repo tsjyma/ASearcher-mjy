@@ -35,3 +35,5 @@ This directory contains the local demo for ASearcher, allowing you to interact w
     Open the `asearcher_client.html` file in your web browser to access the user interface.
 
     You can open it directly from your file system, or serve it via a simple HTTP server.
+
+![](../assets/demo.png)
