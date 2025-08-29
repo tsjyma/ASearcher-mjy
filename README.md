@@ -156,6 +156,8 @@ python3 -m areal.launcher.local ASearcher/train/asearcher.py \
 
 please also refer to the [Training doc](docs/training.md) for the detailed guideline.
 
+## Launch demo
+Please refer [Demo documentation](demo/README.md) to see how to launch an asearcher visualization demo.
 
 ## (Optional) Customization
 
