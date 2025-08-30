@@ -14,27 +14,28 @@ ASearcher is an open-source framework designed for large-scale online reinforcem
 + 🔁 **Data Synthesis Agent**: We introduce a prompt-based LLM agent that autonomously generates grounded, challenging, and highly uncertain QA pairs to enhance training diversity.
 + ⚡ **Fully Asynchronous Agentic RL**: Our scalable agentic RL framework decouples trajectory collection from model training, eliminating GPU idle time and enabling efficient long-horizon RL training.
 + 🌐 **RL Enables Long-Horizon Search**: Through RL training, ASearcher exhibits long-horizon search, with tool calls exceeding 40 rounds and generated tokens surpassing 150k during RL training. 
-+ 🏆 **Cutting-Edge Performance**: With a simple agent design and no external LLMs, ASearcher achieves *Avg@4 scores of 52.8, 42.1, and 70.9* on GAIA, xBench-DeepSearch, and Frames, respectively, surpassing other open-source search agents on the same 32B scale. ASearcher achieves *Pass@4 scores of 70.1, 68.0, and 84.0* on GAIA, xBench-DeepSearch, and Frames.
-+ 📈 **Substantial Improvement Through RL**: RL training  brings improvements of *+9.1, +13.4, and +12.0* Avg@4 scores on GAIA, xBench-DeepSearch, and Frames, respectively.
++ 🏆 **Cutting-Edge Performance**: With a simple agent design and no external LLMs, ASearcher achieves *Avg@4 scores of 58.7, 51.1, and 74.5* on GAIA, xBench-DeepSearch, and Frames, respectively, surpassing other open-source search agents on the same 32B scale. ASearcher achieves *Pass@4 scores of 74.7, 75.0, and 85.5* on GAIA, xBench-DeepSearch, and Frames.
++ 📈 **Substantial Improvement Through RL**: RL training  brings improvements of *+15.0, +22.4, and +14.6* Avg@4 scores on GAIA, xBench-DeepSearch, and Frames, respectively.
 + 🛠️ **Fully Open-Source**: We are committed to open-sourcing all components for agentic RL training, including datasets, data synthesis agent, training details, model weights, and detailed guidelines for customized agent development.<font style="color:#DF2A3F;"> The released models and data could be found at [🤗Huggingface](https://huggingface.co/collections/inclusionAI/asearcher-6891d8acad5ebc3a1e1fb2d1) </font>.
 
 **📰 News & Updates**:
+- 2025-08-30: **ASearcher-v2 incoming!** State-of-the-art search agent with improved training data and end-to-end agentic RL training. Model and data will be released soon.
 - 2025-08-09: Our [technical report](assets/ASearcher.pdf) is released.
 - 2025-08-05: **ASearcher** is released, try asynchronous RL training and automatic QA synthesis to train an advanced search agent!🎉
 
 # Results Showcase
 We evaluate our approach on challenging QA benchmarks (GAIA, xBench-DeepSearch, and Frames), which test advanced problem-solving abilities and web search strategies. These benchmarks are specifically designed to assess an agent's capability to interact with the real web and retrieve up-to-date information, often beyond the internal knowledge of LLMs.
 
-**Cutting-Edge Performance.** Our agent, [ASearcher-Web-QwQ](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ), achieves state-of-the-art performance among open-source agents, with the highest Avg@4 scores on GAIA and xBench. Additionally, we report Pass@4, which measures the ratio of questions where the agent finds the correct answer within four trials. [ASearcher-Web-QwQ](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ) also outperforms existing open-source agents in terms of pass rate, further demonstrating its robustness.
+**Cutting-Edge Performance.** Our agent, [ASearcher-Web-QwQ-v2](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ), achieves state-of-the-art performance among open-source agents, with the highest Avg@4 scores on GAIA and xBench. Additionally, we report Pass@4, which measures the ratio of questions where the agent finds the correct answer within four trials. [ASearcher-Web-QwQ-v2](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ) also outperforms existing open-source agents in terms of pass rate, further demonstrating its robustness.
 
 ![](assets/32B-results.png)
 
 <p align="center"> Fig.1 The performance of various methods based on 32B-scale models on GAIA, xBench-DeepSearch, and frames. Avg@4 and Pass@4 are reported  </p>
 
 
-**Substantial Improvements Through RL.** When comparing performance before and after reinforcement learning (RL), [ASearcher-Web-QwQ](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ) achieves improvements of +9.1, +13.4, and +12.0 on GAIA, xBench-DeepSearch, and Frames, respectively. In terms of pass rate (Pass@4), [ASearcher-Web-QwQ](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ) also demonstrates significant gains—particularly on xBench-DeepSearch, where it shows a remarkable improvement of 17.0.
+**Substantial Improvements Through RL.** When comparing performance before and after reinforcement learning (RL), [ASearcher-Web-QwQ-v2](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ) achieves improvements of *+15.0, +22.4, and +14.6* on GAIA, xBench-DeepSearch, and Frames, respectively. In terms of pass rate (Pass@4), [ASearcher-Web-QwQ-v2](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ) also demonstrates significant gains—particularly on xBench-DeepSearch, where it shows a remarkable improvement of 22.4.
 
-![](assets/before_after_rl.png)
+![](assets/before_after_rl.jpg)
 <p align="center"> Fig.2 Comparison of the performance of QwQ-32B agent before and after RL Training. </p>
 
 
