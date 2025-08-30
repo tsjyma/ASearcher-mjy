@@ -607,7 +607,7 @@ async def process_single_llm_query(llm, tokenizer, prompt: str, sampling_params:
         output_versions=None   # Not available from current LLM
     )
 
-async def process_single_search_query(search_client, query: str, topk: int = 3) -> Any:
+async def process_single_search_query(search_client, query: str, topk: int = 5) -> Any:
     req_meta = {
         "queries": [query],
         "topk": topk,
