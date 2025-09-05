@@ -266,13 +266,13 @@ class AsearcherReasoningAgent:
         # Check action count limits
         action_count = len([h for h in self.current_process["history"] if h["type"] == "act"])
         max_turns_exceeded = action_count >= self.max_turns + 20
-        force_done = action_count >= self.force_turns
+        # force_done = action_count >= self.force_turns
         
         # Check failure count
         llm_gen_fail = self.current_process.get("llm_gen_fail", 0)
         too_many_failures = llm_gen_fail > 32
         
-        return has_answer or max_turns_exceeded or force_done or too_many_failures
+        return has_answer or max_turns_exceeded or too_many_failures
 
     def prepare_llm_query(self):
         """Prepare LLM query for current process"""
