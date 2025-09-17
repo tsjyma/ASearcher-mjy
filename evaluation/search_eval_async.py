@@ -681,9 +681,10 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
         if hasattr(agent, 'set_tokenizer'):
             agent.set_tokenizer(tokenizer)
         
-        process["history"] = []
-        process["running"] = True
-        process["num_turns"] = 0
+        if "history" not in process:
+            process["history"] = []
+            process["running"] = True
+            process["num_turns"] = 0
         
         while process["running"] and agent.num_turns < agent.max_turns:
             # Check if agent is finished

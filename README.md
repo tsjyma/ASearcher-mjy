@@ -19,6 +19,7 @@ ASearcher is an open-source framework designed for large-scale online reinforcem
 + 🛠️ **Fully Open-Source**: We are committed to open-sourcing all components for agentic RL training, including datasets, data synthesis agent, training details, model weights, and detailed guidelines for customized agent development.<font style="color:#DF2A3F;"> The released models and data could be found at [🤗Huggingface](https://huggingface.co/collections/inclusionAI/asearcher-6891d8acad5ebc3a1e1fb2d1) </font>.
 
 **📰 News & Updates**:
+- 2025-09-18: More clean & more flexible training! ASearcher now uses [AReaL](https://github.com/inclusionAI/AReaL) as a package.
 - 2025-08-30: **ASearcher-v2 incoming!** State-of-the-art search agent with improved training data and end-to-end agentic RL training. Model and data will be released soon.
 - 2025-08-09: Our [technical report](assets/ASearcher.pdf) is released.
 - 2025-08-05: **ASearcher** is released, try asynchronous RL training and automatic QA synthesis to train an advanced search agent!🎉
