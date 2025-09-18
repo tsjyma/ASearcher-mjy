@@ -19,8 +19,9 @@ ASearcher is an open-source framework designed for large-scale online reinforcem
 + 🛠️ **Fully Open-Source**: We are committed to open-sourcing all components for agentic RL training, including datasets, data synthesis agent, training details, model weights, and detailed guidelines for customized agent development.<font style="color:#DF2A3F;"> The released models and data could be found at [🤗Huggingface](https://huggingface.co/collections/inclusionAI/asearcher-6891d8acad5ebc3a1e1fb2d1) </font>.
 
 **📰 News & Updates**:
-- 2025-09-18: More clean & more flexible training! ASearcher now uses [AReaL](https://github.com/inclusionAI/AReaL) as a package.
-- 2025-08-30: **ASearcher-v2 incoming!** State-of-the-art search agent with improved training data and end-to-end agentic RL training. Model and data will be released soon.
+- 2025-09-18: Training code and latest model for ASearcher-Web-QwQ are released! Checkout [ASearcher-Web-QwQ-V2](https://huggingface.co/inclusionAI/ASearcher-Web-QwQ-V2) and [our training code](ASearcher/train/asearcher_reasoning.py) for smooth large-scale agentic RL training!
+- 2025-09-18: More clean & flexible training! ASearcher now uses [AReaL](https://github.com/inclusionAI/AReaL) as a package.
+- 2025-08-30: **ASearcher-Web-QwQ-V2 incoming!** State-of-the-art search agent with improved training data and end-to-end agentic RL training. Model and data will be released soon.
 - 2025-08-09: Our [technical report](assets/ASearcher.pdf) is released.
 - 2025-08-05: **ASearcher** is released, try asynchronous RL training and automatic QA synthesis to train an advanced search agent!🎉
 
@@ -154,7 +155,32 @@ python3 -m areal.launcher.local ASearcher/train/asearcher.py \
 ```
 
 ### Fine-tuning a QwQ-32B Agent
-    Coming soon!! Please stay tuned!!
+
+**Step 1.** Launch Qwen2.5-72B-Instruct for LLM-as-Judge:
+
+```shell
+python3 -m areal.launcher.ray ASearcher/train/asearcher_reasoning.py \
+    --config ASearcher/configs/asearcher_web_qwq.yaml \
+    experiment_name=asearcher-qwen72b-inst-server-only \
+    trial_name=run1 \
+    cluster.n_nodes=1 allocation_mode=sglang.d2t4p1 \
+    actor.path=Qwen/Qwen2.5-72B-Instruct 
+```
+
+**Step 2.** Launch QwQ-32B agent training:
+
+```shell
+python3 -m areal.launcher.ray \
+    ASearcher/train/asearcher_reasoning.py \
+    --config ASearcher/configs/asearcher_web_qwq.yaml \
+    experiment_name=asearcher-qwq-train \
+    trial_name=run1 cluster.n_nodes=6 allocation_mode=sglang.d2t8+d4t8 \
+    actor.path=Qwen/QwQ-32B \
+    train_dataset.path=path_to_ASearcher-LRM-35k \
+    judge_engine.experiment_name=asearcher-qwen72b-inst-server-only \
+    judge_engine.trial_name=run1
+```
+
 
 please also refer to the [Training doc](docs/training.md) for the detailed guideline.
 
