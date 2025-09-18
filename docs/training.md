@@ -33,21 +33,6 @@ Here `SERPER_API_KEY` is for the [serper](https://serper.dev/api-keys) API used 
 
 **Step 2**. Launch Training
 
-(Recommended) You can run distributed experiments with Ray or Slurm
-
-```shell
-cd AReaL
-
-python3 -m areal.launcher.ray ASearcher/train/asearcher.py \
-    --config ASearcher/configs/asearcher_web_16nodes.yaml \
-    experiment_name=<your experiment name> \
-    trial_name=<your trial name> \
-    actor.path=Qwen/Qwen2.5-7B/ \
-    train_dataset.path=/path/to/training_data.jsonl \
-    allocation_mode=sglang.d96p1t1+d32p1t1 \
-    cluster.n_nodes=16 \
-    cluster.n_gpus_per_node=8
-```
 
 Run the following command to launch training on a single node:
 
@@ -58,11 +43,26 @@ python3 -m areal.launcher.local ASearcher/train/asearcher.py \
     --config ASearcher/configs/asearcher_web.yaml \
     experiment_name=<your experiment name> \
     trial_name=<your trial name> \
-    actor.path=Qwen/Qwen2.5-7B/ \
+    actor.path=Qwen/Qwen2.5-7B \
     train_dataset.path=/path/to/training_data.jsonl \
     trial_name=<your trial name>
 ```
 
+You can run distributed experiments with Ray or Slurm
+
+```shell
+cd AReaL
+
+python3 -m areal.launcher.ray ASearcher/train/asearcher.py \
+    --config ASearcher/configs/asearcher_web_16nodes.yaml \
+    experiment_name=<your experiment name> \
+    trial_name=<your trial name> \
+    actor.path=Qwen/Qwen2.5-7B \
+    train_dataset.path=/path/to/training_data.jsonl \
+    allocation_mode=sglang.d96p1t1+d32p1t1 \
+    cluster.n_nodes=16 \
+    cluster.n_gpus_per_node=8
+```
 
 
 
@@ -93,8 +93,19 @@ bash scripts/launch_local_server.sh $PORT $RAG_SERVER_ADDR_DIR
 
 **Step 3**. Launch Training
 
+Run the following command to launch training on a single node:
 
-(Recommended) You can run distributed experiments with Ray or Slurm
+```shell
+cd AReaL
+python3 -m areal.launcher.local ASearcher/train/asearcher.py \
+    --config ASearcher/configs/asearcher_local.yaml \
+    experiment_name=<your experiment name> \
+    trial_name=<your trial name> \
+    actor.path=Qwen/Qwen2.5-7B/ \
+    train_dataset.path=/path/to/training_data.jsonl \
+```
+
+You can run distributed experiments with Ray or Slurm
 
 ```shell
 cd AReaL
@@ -109,19 +120,8 @@ python3 -m areal.launcher.slurm ASearcher/train/asearcher.py \
     cluster.n_gpus_per_node=8
 ```
 
-Run the following command to launch training on a single node:
 
-```shell
-cd AReaL
-python3 -m areal.launcher.local ASearcher/train/asearcher.py \
-    --config ASearcher/configs/asearcher_local.yaml \
-    experiment_name=<your experiment name> \
-    trial_name=<your trial name> \
-    actor.path=Qwen/Qwen2.5-7B/ \
-    train_dataset.path=/path/to/training_data.jsonl \
-```
-
-## C. Fine-tuning a QwQ-32B Agent
+## C. Fine-tuning a LRM Agent
 
 **Step 1.** Launch Qwen2.5-72B-Instruct for LLM-as-Judge:
 
@@ -143,11 +143,14 @@ python3 -m areal.launcher.ray \
     experiment_name=asearcher-qwq-train \
     trial_name=run1 cluster.n_nodes=6 allocation_mode=sglang.d2t8+d4t8 \
     actor.path=Qwen/QwQ-32B \
-    train_dataset.batch_size=32 \
     train_dataset.path=path_to_ASearcher-LRM-35k.jsonl \
     judge_engine.experiment_name=asearcher-qwen72b-inst-server-only \
     judge_engine.trial_name=run1
 ```
+
+P.S. You could also try using smaller models, e.g. <=8B, to train a search agent with limited compute.
+
+P.S. Users can run RL training with user-defined agent workflow with only minimal modifications by replacing `OpenAIClient` with `AReaLOpenAIClient`. See [ASearcher/train/reasoning_agent.py](ASearcher/train/reasoning_agent.py) for a concret example.
 
 # Customization
 
