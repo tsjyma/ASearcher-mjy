@@ -122,10 +122,32 @@ python3 -m areal.launcher.local ASearcher/train/asearcher.py \
 ```
 
 ## C. Fine-tuning a QwQ-32B Agent
-Coming soon!! Please stay tuned!!
 
-We are still working on cleaning the code and integration with AReaL-lite. An uncleaned version developped based on an legacy version of AReaL could be found in [https://github.com/inclusionAI/AReaL/tree/gjx/agent?tab=readme-ov-file](https://github.com/inclusionAI/AReaL/tree/gjx/agent?tab=readme-ov-file)
+**Step 1.** Launch Qwen2.5-72B-Instruct for LLM-as-Judge:
 
+```shell
+python3 -m areal.launcher.ray ASearcher/train/asearcher_reasoning.py \
+    --config ASearcher/configs/asearcher_web_qwq.yaml \
+    experiment_name=asearcher-qwen72b-inst-server-only \
+    trial_name=run1 \
+    cluster.n_nodes=1 allocation_mode=sglang.d2t4p1 \
+    actor.path=Qwen/Qwen2.5-72B-Instruct 
+```
+
+**Step 2.** Launch QwQ-32B agent training:
+
+```shell
+python3 -m areal.launcher.ray \
+    ASearcher/train/asearcher_reasoning.py \
+    --config ASearcher/configs/asearcher_web_qwq.yaml \
+    experiment_name=asearcher-qwq-train \
+    trial_name=run1 cluster.n_nodes=6 allocation_mode=sglang.d2t8+d4t8 \
+    actor.path=Qwen/QwQ-32B \
+    train_dataset.batch_size=32 \
+    train_dataset.path=path_to_ASearcher-LRM-35k.jsonl \
+    judge_engine.experiment_name=asearcher-qwen72b-inst-server-only \
+    judge_engine.trial_name=run1
+```
 
 # Customization
 
