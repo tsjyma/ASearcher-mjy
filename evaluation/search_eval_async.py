@@ -312,7 +312,7 @@ def parse_args():
     parser.add_argument("--parallel-mode", type=str, default="seed", choices=["seed", "split"])
     parser.add_argument("--use-jina", action="store_true", help="use jieba to get webpage content")
     parser.add_argument("--jina-api-key", type=str, help="jina api key")
-    parser.add_argument("--concurrent", type=int, default=128, help="concurrent requests of evaluation")
+    parser.add_argument("--concurrent", type=int, default=64, help="concurrent requests of evaluation")
     parser.add_argument("--llm_as_judge", action="store_true", help="Enable LLM-as-judge evaluation")
     parser.add_argument("--judge-prompt", type=str, default="default", help="Judge prompt type for LLM-as-judge")
     parser.add_argument("--use-openai", default=False, type=eval, choices=[True, False], help="Use OpenAI for LLM-as-judge")
@@ -597,6 +597,8 @@ async def process_single_llm_query(llm, tokenizer, prompt: str, sampling_params:
     input_tokens = tokenizer.encode(prompt) if tokenizer else None
     output_tokens = tokenizer.encode(text) if tokenizer and text else None
     
+    print("[DEBUG] input length:", len(input_tokens), flush=True)
+
     return CompatibleLLMResponse(
         text=text,
         input_len=len(input_tokens) if input_tokens else None,
@@ -670,21 +672,23 @@ def convert_agent_tool_calls_to_dict(agent_tool_calls):
     
     return dict_tool_calls
 
+
 async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search_client, args, out_dir, process):
     """Process a single work item using agent v2"""
     async with semaphore:
+        if "history" not in process:
+            process["history"] = []
+            process["running"] = True
+            process["num_turns"] = 0
+
         # Create fresh agent instance for thread safety
         agent = make_agent(agent_type)
-        agent.initialize_with_prompt(process["prompt"])
+        agent.initialize_with_prompt(process)
         
         # Set tokenizer for V1 agents that need it
         if hasattr(agent, 'set_tokenizer'):
             agent.set_tokenizer(tokenizer)
         
-        if "history" not in process:
-            process["history"] = []
-            process["running"] = True
-            process["num_turns"] = 0
         
         while process["running"] and agent.num_turns < agent.max_turns:
             # Check if agent is finished
@@ -694,11 +698,14 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
             
             try:
                 # Get LLM query from agent
-                prompt, sampling_params = agent.prepare_llm_query()
+                prompt_or_messages, sampling_params = agent.prepare_llm_query()
+
+                if isinstance(prompt_or_messages, str):
+                    prompt = prompt_or_messages
                 
-                # Process LLM query
-                llm_response = await process_single_llm_query(llm, tokenizer, prompt, sampling_params, args, qid=process["id"])
-                completion_text = llm_response.text
+                    # Process LLM query
+                    llm_response = await process_single_llm_query(llm, tokenizer, prompt, sampling_params, args, qid=process["id"])
+                    completion_text = llm_response.text
                 
                 # Let agent consume LLM response and get tool calls
                 tool_calls_raw = agent.consume_llm_response(llm_response, completion_text)
@@ -796,6 +803,8 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                 with open(os.path.join(out_dir, f"{process['id']}.json"), "w") as f:
                     # Include agent memory for debugging
                     process_copy = process.copy()
+                    if hasattr(agent, "current_process"):
+                        process_copy = agent.current_process.copy()
                     if hasattr(agent, 'memory') and agent.memory:
                         process_copy["agent_memory"] = agent.memory.to_dict()
                         process_copy["agent_stats"] = agent.memory.logging_stats()

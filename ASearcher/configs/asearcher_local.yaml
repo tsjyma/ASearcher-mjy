@@ -12,7 +12,7 @@ seed: 1
 total_train_epochs: 10
 total_train_steps: null
 tokenizer_path: ${actor.path}
-allocation_mode: sglang.d4p1t1+d4p1t1
+allocation_mode: sglang.d4p1t1+d1c4
 async_training: true
 
 rollout:
@@ -53,11 +53,9 @@ actor:
     gradient_clipping: 1.0
     warmup_steps_proportion: 0.001
   backend: fsdp
-  fsdp:
-    ulysses_sp_size: 4
 
   group_size: ${gconfig.n_samples}
-  group_adv_norm: false
+  group_reward_norm: false
   eps_clip: 0.4
   temperature: ${gconfig.temperature}
   reward_scaling: 10.0

@@ -11,9 +11,9 @@ A fully asynchronous agentic RL training framework for search agent.
 
 # Preparation
 
-**Step 1:** Prepare the runtime environment.
+**Step 1:** Prepare the runtime environment and install AReaL.
 
-Please refer to https://inclusionai.github.io/AReaL/tutorial/installation.html#runtime-environment for `Runtime Environment`.
+Please refer to https://inclusionai.github.io/AReaL/tutorial/installation.html.
 
 
 **Step 2:** download training data from [ASearcher-train-data](https://huggingface.co/datasets/inclusionAI/ASearcher-train-data).

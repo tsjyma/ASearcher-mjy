@@ -1,5 +1,6 @@
 import re
 import time
+import copy
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
@@ -231,16 +232,17 @@ class AsearcherReasoningAgent:
             finished.append(not process.get("running", True))
         return all(finished)
 
-    def initialize_with_prompt(self, prompt):
+    def initialize_with_prompt(self, process):
         """Initialize agent with a specific prompt"""
-        self.current_process = {
-            "prompt": prompt,
-            "question": prompt,  # Add question field for compatibility
-            "history": [dict(type="prompt", text=prompt)],
-            "running": True,
-            "phase": "search",
-            "id": "0"
-        }
+        if "question" not in process:
+            process["question"] = process["prompt"]
+        if "prompt" not in process:
+            process["prompt"] = process["question"]
+        if len(process["history"]) == 0:
+            process["history"] = [dict(type="prompt", text=process["prompt"])]
+            process["running"] = True
+            process["phase"] = "search"
+        self.current_process = copy.deepcopy(process)
     
     def set_tokenizer(self, tokenizer):
         """Set tokenizer for the agent"""
@@ -309,12 +311,15 @@ class AsearcherReasoningAgent:
             else:
                 raise RuntimeError(f"Not supported history type: {process['history'][-1]['type']}")
             
+            messages = [{"role": "user", "content": prompt}]
             input_text = self.tokenizer.apply_chat_template([{"role": "user", "content": prompt}], add_generation_prompt=True, tokenize=False)
             query_len = self.tokenizer([input_text], return_length=True)['length'][0]
 
             if query_len <= 28000:
                 print(f"Reading @ Qid {process['id']}", query_len, flush=True)
-                sampling_params = {"stop": self.stop, "max_new_tokens": 31000-query_len}
+                # sampling_params = {"stop": self.stop, "max_new_tokens": 31000-query_len}
+                sampling_params = {"max_completion_tokens": 31000 - query_len}
+                # return messages, sampling_params
                 return input_text, sampling_params
             
             if "cache_gen_text" in process:
@@ -370,7 +375,7 @@ class AsearcherReasoningAgent:
         max_new_tokens = max(0, 31000 - query_len)
         
         print(f"Generate {'Answer' if should_answer else 'Act'} @ Qid {process['id']}", 
-              input_len, doc_count, action_count, flush=True)
+              input_len, doc_count, action_count, max_new_tokens, flush=True)
         
         sampling_params = {"stop": self.stop, "max_new_tokens": max_new_tokens}
         return input_text, sampling_params
