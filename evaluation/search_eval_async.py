@@ -700,6 +700,8 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                 # Get LLM query from agent
                 prompt_or_messages, sampling_params = agent.prepare_llm_query()
 
+                assert not agent.is_finished
+
                 if isinstance(prompt_or_messages, str):
                     prompt = prompt_or_messages
                 
@@ -710,6 +712,8 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                 # Let agent consume LLM response and get tool calls
                 tool_calls_raw = agent.consume_llm_response(llm_response, completion_text)
                 tool_calls = convert_agent_tool_calls_to_dict(tool_calls_raw)
+
+                assert not agent.is_finished
                 
                 # Log progress
                 if tool_calls:
@@ -799,22 +803,24 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                 
                 process["num_turns"] = agent.num_turns
                 
-                # Save intermediate state
-                with open(os.path.join(out_dir, f"{process['id']}.json"), "w") as f:
-                    # Include agent memory for debugging
-                    process_copy = process.copy()
-                    if hasattr(agent, "current_process"):
-                        process_copy = agent.current_process.copy()
-                    if hasattr(agent, 'memory') and agent.memory:
-                        process_copy["agent_memory"] = agent.memory.to_dict()
-                        process_copy["agent_stats"] = agent.memory.logging_stats()
-                    json.dump(process_copy, f, ensure_ascii=False)
+                assert not agent.is_finished
                 
             except Exception as e:
                 print(f"Error processing work item {process['id']}: {e}")
                 process["running"] = False
                 process["error"] = str(e)
                 break
+
+            # Save intermediate state
+            with open(os.path.join(out_dir, f"{process['id']}.json"), "w") as f:
+                # Include agent memory for debugging
+                process_copy = process.copy()
+                if hasattr(agent, "current_process"):
+                    process_copy = agent.current_process.copy()
+                if hasattr(agent, 'memory') and agent.memory:
+                    process_copy["agent_memory"] = agent.memory.to_dict()
+                    process_copy["agent_stats"] = agent.memory.logging_stats()
+                json.dump(process_copy, f, ensure_ascii=False)
         
         # Ensure we have a final answer
         if "pred_answer" not in process and hasattr(agent, 'get_answer'):

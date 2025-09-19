@@ -13,7 +13,7 @@ ASearcher is an open-source framework designed for large-scale online reinforcem
 
 + 🔁 **Data Synthesis Agent**: We introduce a prompt-based LLM agent that autonomously generates grounded, challenging, and highly uncertain QA pairs to enhance training diversity.
 + ⚡ **Fully Asynchronous Agentic RL**: Our scalable agentic RL framework decouples trajectory collection from model training, eliminating GPU idle time and enabling efficient long-horizon RL training.
-+ 🌐 **RL Enables Long-Horizon Search**: Through RL training, ASearcher exhibits long-horizon search, with tool calls exceeding 40 rounds and generated tokens surpassing 150k during RL training. 
++ 🌐 **RL Enables Long-Horizon Search**: Through RL training, ASearcher exhibits long-horizon search, with tool calls exceeding 100 rounds and generated tokens surpassing 400k during RL training. 
 + 🏆 **Cutting-Edge Performance**: With a simple agent design and no external LLMs, ASearcher achieves *Avg@4 scores of 58.7, 51.1, and 74.5* on GAIA, xBench-DeepSearch, and Frames, respectively, surpassing other open-source search agents on the same 32B scale. ASearcher achieves *Pass@4 scores of 74.7, 75.0, and 85.5* on GAIA, xBench-DeepSearch, and Frames.
 + 📈 **Substantial Improvement Through RL**: RL training  brings improvements of *+15.0, +22.4, and +14.6* Avg@4 scores on GAIA, xBench-DeepSearch, and Frames, respectively.
 + 🛠️ **Fully Open-Source**: We are committed to open-sourcing all components for agentic RL training, including datasets, data synthesis agent, training details, model weights, and detailed guidelines for customized agent development.<font style="color:#DF2A3F;"> The released models and data could be found at [🤗Huggingface](https://huggingface.co/collections/inclusionAI/asearcher-6891d8acad5ebc3a1e1fb2d1) </font>.
@@ -69,7 +69,7 @@ Our analysis reveals significant **variance in the execution time of agent traje
 <p align="center"> Fig.4 (Left) Number of turns versus training steps. (Right) Number of generated tokens versus training steps. </p>
 
  
-**Fuly Asynchronous RL Training Enables Long-Horizon Tool Use.** In batch-generation RL systems, a batch must wait for the longest trajectory to complete, resulting in significant GPU idle time. In contrast, fully asynchronous reinforcement learning (RL) eliminates this bottleneck by completely decoupling training from trajectory generation. This allows relaxed turn limits (e.g., 128 turns/trajectory), enabling agents to explore deeper search paths without sacrificing training efficiency. Remarkably, our agent, ASearcher-Web-QwQ, achieves extreme long-horizon search, **with tool calls exceeding 40 turns and generated tokens surpassing 150k during RL training**.
+**Fuly Asynchronous RL Training Enables Long-Horizon Tool Use.** In batch-generation RL systems, a batch must wait for the longest trajectory to complete, resulting in significant GPU idle time. In contrast, fully asynchronous reinforcement learning (RL) eliminates this bottleneck by completely decoupling training from trajectory generation. This allows relaxed turn limits (e.g., 128 turns/trajectory), enabling agents to explore deeper search paths without sacrificing training efficiency. Remarkably, our agent, ASearcher-Web-QwQ, achieves extreme long-horizon search, **with tool calls exceeding 100 turns and generated tokens surpassing 400k during RL training**.
 
 ![](assets/one-step_vs_fully-async.png)
 

@@ -73,8 +73,9 @@ class AsearcherAgent:
         self.job_queue = queue.Queue(128)
         self.max_turns = 64  # Default max turns like other agents
         
-    def initialize_with_prompt(self, prompt):
+    def initialize_with_prompt(self, process):
         """Initialize or reset agent with a specific prompt"""
+        prompt = process["prompt"]
         self.prompt = prompt
         self.memory = AgentMemory(prompt=prompt)
         self.job_queue = queue.Queue(128)
