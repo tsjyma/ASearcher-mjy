@@ -456,7 +456,7 @@ class AsearcherReasoningAgent:
         elif len(raw_generated_text) == 0:
             process["cache_gen_text"] = ""
             process["llm_gen_fail"] = process.get("llm_gen_fail", 0) + 1
-            if process["llm_gen_fail"] > 32:
+            if process["llm_gen_fail"] > 16:
                 print("process is done (2)", process["id"], process["llm_gen_fail"])
                 process["running"] = False
         else:
@@ -470,6 +470,7 @@ class AsearcherReasoningAgent:
                 process["llm_gen_fail"] = process.get("llm_gen_fail", 0) + 1
                 process["page_cache"] = []
             else:
+                process["llm_gen_fail"] = process.get("llm_gen_fail", 0) + 1
                 process["cache_gen_text"] = generated_text
         
         # Check termination conditions
