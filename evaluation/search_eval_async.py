@@ -560,7 +560,7 @@ async def process_single_llm_query(llm, tokenizer, prompt: str, sampling_params:
         temperature=args.temperature,
         top_p=args.top_p,
         top_k=args.top_k,
-        max_new_tokens=args.max_tokens_per_call,
+        max_new_tokens=sampling_params.get("max_new_tokens", args.max_tokens_per_call),
         n=1,
         stop_token_ids=(
             [151645, 151643]

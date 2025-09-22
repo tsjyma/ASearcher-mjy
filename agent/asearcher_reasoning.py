@@ -317,10 +317,10 @@ class AsearcherReasoningAgent:
 
             if query_len <= 28000:
                 print(f"Reading @ Qid {process['id']}", query_len, flush=True)
-                # sampling_params = {"stop": self.stop, "max_new_tokens": 31000-query_len}
-                sampling_params = {"max_completion_tokens": 31000 - query_len}
-                return messages, sampling_params
-                # return input_text, sampling_params
+                sampling_params = {"stop": self.stop, "max_new_tokens": 31000-query_len}
+                # sampling_params = {"max_completion_tokens": 31000 - query_len}
+                # return messages, sampling_params
+                return input_text, sampling_params
             
             if "cache_gen_text" in process:
                 process.pop("cache_gen_text")
