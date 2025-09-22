@@ -821,7 +821,7 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                     process_copy["agent_memory"] = agent.memory.to_dict()
                     process_copy["agent_stats"] = agent.memory.logging_stats()
                 json.dump(process_copy, f, ensure_ascii=False)
-        
+
         # Ensure we have a final answer
         if "pred_answer" not in process and hasattr(agent, 'get_answer'):
             final_answer = agent.get_answer()
@@ -829,6 +829,17 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                 process["pred_answer"] = final_answer
             else:
                 process["pred_answer"] = ""
+        
+        # Save final state
+        with open(os.path.join(out_dir, f"{process['id']}.json"), "w") as f:
+            # Include agent memory for debugging
+            process_copy = process.copy()
+            if hasattr(agent, "current_process"):
+                process_copy = agent.current_process.copy()
+            if hasattr(agent, 'memory') and agent.memory:
+                process_copy["agent_memory"] = agent.memory.to_dict()
+                process_copy["agent_stats"] = agent.memory.logging_stats()
+            json.dump(process_copy, f, ensure_ascii=False)
         
         return process
 
