@@ -560,7 +560,7 @@ async def process_single_llm_query(llm, tokenizer, prompt: str, sampling_params:
         temperature=args.temperature,
         top_p=args.top_p,
         top_k=args.top_k,
-        max_new_tokens=sampling_params.get("max_new_tokens", args.max_tokens_per_call),
+        max_new_tokens=args.max_tokens_per_call,
         n=1,
         stop_token_ids=(
             [151645, 151643]
@@ -594,7 +594,13 @@ async def process_single_llm_query(llm, tokenizer, prompt: str, sampling_params:
         text = truncate_at_first_complete_tool_call(text)
     
     # Try to extract additional information if available
-    input_tokens = tokenizer.encode(prompt) if tokenizer else None
+    if tokenizer:
+        if isinstance(prompt, str):
+            input_tokens = tokenizer.encode(prompt) if prompt else None
+        elif isinstance(prompt, list):
+            theprompt = tokenizer.apply_chat_template(prompt, tokenize=False)
+            input_tokens = tokenizer.encode(theprompt) if theprompt else None
+
     output_tokens = tokenizer.encode(text) if tokenizer and text else None
     
     print("[DEBUG] input length:", len(input_tokens), flush=True)
@@ -829,17 +835,6 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                 process["pred_answer"] = final_answer
             else:
                 process["pred_answer"] = ""
-        
-        # Save final state
-        with open(os.path.join(out_dir, f"{process['id']}.json"), "w") as f:
-            # Include agent memory for debugging
-            process_copy = process.copy()
-            if hasattr(agent, "current_process"):
-                process_copy = agent.current_process.copy()
-            if hasattr(agent, 'memory') and agent.memory:
-                process_copy["agent_memory"] = agent.memory.to_dict()
-                process_copy["agent_stats"] = agent.memory.logging_stats()
-            json.dump(process_copy, f, ensure_ascii=False)
         
         return process
 

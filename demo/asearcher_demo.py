@@ -43,7 +43,7 @@ class QueryRequest(BaseModel):
     temperature: Optional[float] = 0.6
     top_p: Optional[float] = 1.0
     top_k: Optional[int] = -1
-    max_tokens_per_call: Optional[int] = 4096
+    max_tokens_per_call: Optional[int] = 30000
     agent_type: Optional[str] = "asearcher"
     prompt_type: Optional[str] = "asearcher"
 
@@ -95,45 +95,75 @@ class AsyncVLLMClient:
         self.api_key = api_key
         
         self.client = AsyncOpenAI(
-            base_url=f"{self.llm_url}/v1",
+            base_url=f"{self.llm_url}/v1/",
             api_key=self.api_key,
         )
         logger.info(f"Initialized AsyncOpenAI client: {self.llm_url}")
     
     async def async_generate(self, prompt: str, sampling_kwargs: Dict) -> Dict:
         """Generate text asynchronously"""
-        completion_kwargs = {
-            "model": self.model_name,
-            "prompt": prompt,
-            "max_tokens": sampling_kwargs.get("max_new_tokens", 4096),
-            "temperature": sampling_kwargs.get("temperature", 0.0),
-            "top_p": sampling_kwargs.get("top_p", 1.0),
-            "stream": False,
-        }
-        
-        stop_sequences = sampling_kwargs.get("stop", [])
-        if stop_sequences:
-            completion_kwargs["stop"] = stop_sequences
-        
-        extra_body = {}
-        if "top_k" in sampling_kwargs and sampling_kwargs["top_k"] > 0:
-            extra_body["top_k"] = sampling_kwargs["top_k"]
-        
-        if "stop_token_ids" in sampling_kwargs:
-            extra_body["stop_token_ids"] = sampling_kwargs["stop_token_ids"]
-        
-        if extra_body:
-            completion_kwargs["extra_body"] = extra_body
-        
-        logger.info(f"Calling vLLM API: {completion_kwargs}")
-        
-        response = await self.client.completions.create(**completion_kwargs)
-        
-        if response.choices and len(response.choices) > 0:
-            choice = response.choices[0]
-            return {"text": choice.text, "finish_reason": choice.finish_reason}
+        if isinstance(prompt, list) and len(prompt) > 0 and isinstance(prompt[0], dict) and "role" in prompt[0]:
+            # Chat format
+            completion_kwargs = {
+                "model": self.model_name,
+                "messages": prompt,
+                "max_tokens": sampling_kwargs.get("max_new_tokens", 30000),
+                "temperature": sampling_kwargs.get("temperature", 0.0),
+                "top_p": sampling_kwargs.get("top_p", 1.0),
+                "stream": False,
+            }
+            stop_sequences = sampling_kwargs.get("stop", [])
+            if stop_sequences:
+                completion_kwargs["stop"] = stop_sequences
+            # logger.info(f"Calling vLLM API: {completion_kwargs}")
+            logger.info(f"Calling vLLM Chat API with model {self.model_name}")
+            response = await self.client.chat.completions.create(**completion_kwargs)
+            if response.choices and len(response.choices) > 0:
+                choice = response.choices[0]
+                return {"text": choice.message.content, "finish_reason": choice.finish_reason}
+            else:
+                return {"text": "", "finish_reason": "unknown"}
         else:
-            return {"text": "", "finish_reason": "unknown"}
+            messages = [{"role": "user", "content": prompt}]
+            completion_kwargs = {
+                "model": self.model_name,
+                "messages": messages,
+                "max_tokens": sampling_kwargs.get("max_new_tokens", 30000),
+                "temperature": sampling_kwargs.get("temperature", 0.0),
+                "top_p": sampling_kwargs.get("top_p", 1.0),
+                "stream": False,
+            }
+            stop_sequences = sampling_kwargs.get("stop", [])
+            if stop_sequences:
+                completion_kwargs["stop"] = stop_sequences
+            # logger.info(f"Calling vLLM API: {completion_kwargs}")
+            logger.info(f"Calling vLLM Chat API with model {self.model_name}")
+            response = await self.client.chat.completions.create(**completion_kwargs)
+            if response.choices and len(response.choices) > 0:
+                choice = response.choices[0]
+                return {"text": choice.message.content, "finish_reason": choice.finish_reason}
+            else:
+                return {"text": "", "finish_reason": "unknown"}
+            # Completion format
+            # completion_kwargs = {
+            #     "model": self.model_name,
+            #     "prompt": prompt,
+            #     "max_tokens": sampling_kwargs.get("max_new_tokens", 30000),
+            #     "temperature": sampling_kwargs.get("temperature", 0.0),
+            #     "top_p": sampling_kwargs.get("top_p", 1.0),
+            #     "stream": False,
+            # }
+            # stop_sequences = sampling_kwargs.get("stop", [])
+            # if stop_sequences:
+            #     completion_kwargs["stop"] = stop_sequences
+            # #logger.info(f"Calling vLLM API: {completion_kwargs}")
+            # logger.info(f"Calling vLLM Chat API with model {self.model_name}")
+            # response = await self.client.completions.create(**completion_kwargs)
+            # if response.choices and len(response.choices) > 0:
+            #     choice = response.choices[0]
+            #     return {"text": choice.text, "finish_reason": choice.finish_reason}
+            # else:
+            #     return {"text": "", "finish_reason": "unknown"}
     
     async def close(self):
         """Close client connection"""
@@ -274,6 +304,7 @@ class AsearcherDemo:
         """Process single query (background task)"""
         query_data = self.active_queries[query_id]
         request = query_data["request"]
+        request.agent_type = "asearcher-weaver"
         
         await self.add_step(query_id, "start", "Start processing", f"Query: <strong>{request.query}</strong>")
         
@@ -286,7 +317,13 @@ class AsearcherDemo:
         except:
             prompt = request.query
         
-        agent.initialize_with_prompt(prompt)
+        agent.initialize_with_prompt({
+            "id": query_id,
+            "prompt": prompt,
+            "history": [],
+            "running": True,
+            "pred_answer": None
+        })
         agent.max_turns = request.max_turns
         
         search_client = self.get_search_client(request.search_client_type, request.use_jina)
@@ -365,6 +402,7 @@ class AsearcherDemo:
 
             llm_response = await self.process_single_llm_query(prompt, sampling_params, request, query_id)
             completion_text = llm_response.text
+            # print(f"LLM Response (query {query_id}, turn {turn_counter}): {completion_text[:200]}...")
 
             # --- Thought and Action Separation ---
             # Prefer extracting the latest <thought>...</thought> (or <think>...</think>) block
@@ -558,6 +596,8 @@ class AsearcherDemo:
         
         output = await self.llm.async_generate(prompt, sampling_kwargs)
         text = output.get('text', '')
+
+        print(f"LLM Output (query {qid}): {text[:200]}...")
         
         # Complete incomplete tool calls (vLLM doesn't return stop sequences)
         text = self.complete_incomplete_tool_calls(text, sampling_params.get("stop", []))
@@ -612,22 +652,62 @@ class AsearcherDemo:
         
         return text[:earliest_end] if found_tool_call else text
 
-    def convert_agent_tool_calls_to_dict(self, agent_tool_calls):
+    def convert_agent_tool_calls_to_dict(agent_tool_calls):
         """Convert agent tool calls to dict format"""
+        import re
+        
         dict_tool_calls = []
         
         for tool_call_str in agent_tool_calls:
-            for tag, call_type, key in [
-                ('search', 'search', 'query'), 
-                ('access', 'access', 'url'), 
-                ('answer', 'answer', 'content')
-            ]:
-                match = re.search(f'<{tag}>(.*?)</{tag}>', tool_call_str, re.DOTALL)
-                if match:
-                    dict_tool_calls.append({"type": call_type, key: match.group(1).strip()})
-                    break
-        
+            # Parse <search>...</search>
+            search_match = re.search(r'<search>(.*?)</search>', tool_call_str, re.DOTALL)
+            if search_match:
+                dict_tool_calls.append({"type": "search", "query": search_match.group(1).strip()})
+                continue
+                
+            # Parse <access>...</access>
+            access_match = re.search(r'<access>(.*?)</access>', tool_call_str, re.DOTALL)
+            if access_match:
+                dict_tool_calls.append({"type": "access", "content": access_match.group(1).strip()})
+                continue
+                
+            # Parse <write_outline>
+            outline_match = re.search(r'<write_outline>', tool_call_str, re.DOTALL)
+            if outline_match:
+                dict_tool_calls.append({"type": "write_outline", "content": ""})
+                continue
+
+            # Parse <terminate>
+            terminate_match = re.search(r'<terminate>', tool_call_str, re.DOTALL)
+            if terminate_match:
+                dict_tool_calls.append({"type": "terminate", "content": ""})
+                continue
+
+            # Parse <retrieve>...</retrieve>
+            retrieve_match = re.search(r'<retrieve>(.*?)</retrieve>', tool_call_str, re.DOTALL)
+            if retrieve_match:
+                dict_tool_calls.append({"type": "retrieve", "content": retrieve_match.group(1).strip()})
+                continue
+
+            # Parse <write_terminate>
+            write_terminate_match = re.search(r'<write_terminate>', tool_call_str, re.DOTALL)
+            if write_terminate_match:
+                dict_tool_calls.append({"type": "write_terminate", "content": ""})
+                continue
+
+            # Parse <answer>...</answer>
+            answer_match = re.search(r'<answer>(.*?)</answer>', tool_call_str, re.DOTALL)
+            if answer_match:
+                dict_tool_calls.append({"type": "answer", "content": answer_match.group(1).strip()})
+                continue
+
         return dict_tool_calls
+
+    def parse_retrieved_ids(content):
+        import re
+        ids = re.findall(r'<id>(\d+)</id>', content, re.DOTALL)
+        ids = [id_.strip() for id_ in ids]
+        return ids
 
     def complete_incomplete_tool_calls(self, text: str, stop_sequences: List[str]) -> str:
         """Complete incomplete tool calls by adding missing end tags"""

@@ -330,7 +330,7 @@ async def llm_as_judge_async(fname_pattern, llm, model_path="/storage/openpsi/mo
                             **{
                                 "model": model_path,
                                 "messages": [{"role": "user", "content": prompt}],
-                                "max_tokens": 1024,
+                                "max_tokens": 10000,
                                 "temperature": 0.6,
                             }
                         )
