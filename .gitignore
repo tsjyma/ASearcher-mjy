@@ -7,3 +7,7 @@ test/
 eval_config.yaml
 
 ASearcherWeaver/
+
+*.txt
+
+*.json

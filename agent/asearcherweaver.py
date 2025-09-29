@@ -179,6 +179,8 @@ class AsearcherWeaverAgent:
             process["history"] = [dict(type="prompt", text=process["prompt"])]
             process["running"] = True
             process["phase"] = "search"
+            process["outline"] = ""
+            process["report"] = ""
         self.current_process = copy.deepcopy(process)
     
     def set_tokenizer(self, tokenizer):
@@ -225,6 +227,9 @@ class AsearcherWeaverAgent:
         if not process.get("running", False):
             return "", {"stop": self.stop}
         
+        print(f"Preparing LLM query for process {process['id']} with {len(process['history'])} history items.")
+        print(f"History types: {process['history'][-1]['type']}\n"+"-"*50)
+
         # Handle reading mode - when we have info_str but no text
         if "text" not in process["history"][-1] and "info_str" in process["history"][-1]:
             history = ""
@@ -335,11 +340,12 @@ class AsearcherWeaverAgent:
         # Determine if we should force answer generation
         action_count = len([h for h in process["history"] if h["type"] == "act"])
         doc_count = len([h for h in process["history"] if h["type"] == "documents"])
-        should_answer = any([
-            doc_count >= 20,
-            action_count >= self.force_turns,
-            process.get("phase", "search") == "answer"
-        ])
+        # should_answer = any([
+        #     doc_count >= 20,
+        #     action_count >= self.force_turns,
+        #     process.get("phase", "search") == "answer"
+        # ])
+        should_answer=False
         
         if should_answer:
             process["phase"] = "answer"
@@ -427,10 +433,12 @@ class AsearcherWeaverAgent:
             process["history"].append(dict(
                 type="write", 
             ))
+            process["report"] += self.report
 
         # Update current outline if extracted
         if outline is not None and len(outline) > 0:
             self.outline = outline
+            process["outline"] = outline
 
         # store the summary in memory bank
         if id is not None and extracted_summary is not None:
@@ -510,6 +518,11 @@ class AsearcherWeaverAgent:
         if action_count >= self.max_turns + 20 or "<answer>" in think_and_act:
             print("process is done (3)", process["id"], action_count, self.max_turns, "<answer>" in think_and_act, flush=True)
             process["running"] = False
+
+        if report is not None and len(report) > 0:
+            process["history"].append(dict(
+                type="write", 
+            ))
         
         return tool_calls
 
