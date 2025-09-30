@@ -1,22 +1,60 @@
 # 项目概况
-我的代码主要实现了以下几点：
-1. **summary with goal**: 在模型生成摘要时，要求模型根据goal和page生成摘要，而不是给模型全部的历史信息，这样可能可以防止模型被历史信息干扰，专注于生成高质量的摘要，这个方法来自https://github.com/Alibaba-NLP/DeepResearch/，测试发现，目前摘要质量不错
-2. **memory bank**: memory bank可以存储所有的摘要信息，memory bank中的摘要可以通过id来查找。这个结构来自Li, Zijian, et al. "WebWeaver: Structuring Web-Scale Evidence with Dynamic Outlines for Open-Ended Deep Research." arXiv preprint arXiv:2509.13312 (2025). 这些摘要可以被用来生成outline和report
-3. **planner & writer structure**: 我将模型的任务分为生成大纲和生成报告两个部分，planner的目标是生成大纲，大纲中每个章节直接引用summary的id，writer的目标是生成报告，报告中使用summary时直接从memory bank中获得。这也是为了保证，在部分简单但要求质量的任务中，没有历史信息干扰。这个结构也来自Li, Zijian, et al. "WebWeaver: Structuring Web-Scale Evidence with Dynamic Outlines for Open-Ended Deep Research." arXiv preprint arXiv:2509.13312 (2025). agent运行流程：start -> ( (search -> access -> summary) * n -> write_outline ) * m -> terminate -> ( retrieve -> write ) -> write_terminate
+## ASearcher存在的问题
+1. 摘要质量不高，例如未能准确引用相关链接；
+2. 缺乏对历史网页和搜索结果的有效管理机制。
+
+## 改进思路
+为了解决这样的问题，我们提出了新的摘要机制**summary with goal**，新的摘要管理机制**memory bank**，新的引用与报告模式**planner and writer**，结合这三点改进与原有的ASearcher框架，我们提出了新的agent，**ASearcherWeaver**。
+
+### ASearcherWeaver 工作流程
+overview: start -> Planner Phase -> Writer Phase -> terminate
+1. **Planner Phase**: agent 进行search, access, summary与write outline几种操作，为后续的report (write phase)完成一份全面的大纲，并不断改进大纲的质量。
+
+   (1) search: agent给出搜索词，通过搜索引擎进行搜索，返回搜索结果
+
+   (2) access: agent给出要访问的URL与访问想要达到的目标，返回网页信息
+
+   (3) summary: 为agent提供目标与网页信息，要求agent生成摘要
+
+   (4) write outline: 为agent提供memory bank中新增的摘要与原有的outline，生成更加全面的outline并对摘要进行引用
+
+2. **Writer Phase**: agent交替进行retrieve和write两种操作，先从memory bank中检索摘要，而后完成report。
+
+   (1) retrieve: 根据outline中给出的摘要编号与要完成的对应章节信息，向memory bank检索摘要，返回对应的摘要
+
+   (2) write: 根据outline，摘要与给出的要完成的章节信息，完成对应章节的写作
+
+总流程：start -> ( (search -> access -> summary) * n -> write_outline ) * m -> terminate -> ( retrieve -> write ) -> write_terminate
+
+### 机制介绍
+1. **summary with goal** 重点为了解决摘要质量的问题。我们提出让agent阅读网页信息，生成摘要之前，提出自己阅读网页的目标goal，之后，在agent生成摘要时，我们并不将历史信息提供给agent，而是只将网页信息和目标提供给agent，使其专注在当前浏览的网页，防止其未准确引用相关链接；同时，这种机制也防止了agent阅读网页时没有侧重点的问题，goal可以明确给出agent阅读网页的指引，也可以让摘要对任务更有帮助；另外，为了进一步提高摘要质量，在设计提示词时，我们要求agent根据goal给出准确的Rational（给出网页内容中与goal直接相关的部分的位置），Evidence（给出与goal最相关的信息），Summary（给出摘要），这样可以进一步保证生成内容和网页信息相关。
+
+2. **memory bank** 重点为了解决对摘要的管理机制。ASearcher有强大的多轮工具调用能力，而summary with goal生成的摘要长度又会很长，并且摘要内容对agent思考可能并没有过多的帮助，所以我们提出memory bank，在agent生成完摘要后将摘要存储在memory bank中，在有需要时进行调用，比如生成report或生成outline时。agent访问memory bank的形式是cite and retrieve，在生成outline时，agent会将摘要的编号引用在需要的位置，而之后在完成report时，agent会对相应编号的summary进行检索（retrieve），memory bank 返回对应的summary，并放入后续的提示词中。
+
+3. **planner and writer** 这个结构重点为了连接起summary with goal和memory bank两个部分，让ASearcher拥有更强的summary与report能力，agent在任务的前半部分会扮演planner的角色，思考问题的解决路径，进行搜索（search），访问（access），总结（summary），以及编写大纲（write outline）；agent在后半部分的任务是扮演writer的角色，完成report，agent会先进行retrieve，根据outline中引用的summary编号向memmory bank检索对应的summary，之后，我们将检索到的summary与outline一同提供给agent，要求其一段一段地完成report。这样的结构形成了一套高效的对summary进行引用、检索和使用的流程框架。
+
+### 实现逻辑
+1. 修改原有prompt，新的prompt分为`ASearcherWeaverPlannerPrompt`与`ASearcherWeaverWriterPrompt`两类，分别支持了planner与writer的新操作，如write outline, retrieve 与 write；在planner阶段，新增的摘要与现有的大纲均会出现在提示词中。
+
+2. summary with goal: 要求agent要进行access时提供goal，之后程序可以解析出URL与goal，访问成功后会将网页内容与goal都嵌入到summary提示词
+
+3. memory bank: 作为agent的一个属性出现，本质上是一个字典，key是summary的编号，value是summary的内容。agent维护了一个summary的计数器，每次要进行summary时会加一，从而对summary进行编号，也便于后续的引用与检索
+
+4. planner and writer: planner停止会输出“terminate” token 而后通过原有的history机制强制进入writer阶段
+
+### 运行效果
+样例见agent/demo.txt
 
 # 修改内容
-1. `agent`文件夹：新增`asearcherweaver.py`agnet相关代码， `prompts.py` 提示词， `ASEARCHERWEAVER实现笔记.pdf` 实现的心路历程，`README.md`项目整体介绍。
+1. `agent`文件夹：新增`asearcherweaver.py`agent相关代码， `prompts.py` 提示词，`README.md`项目整体介绍，`demo.txt`项目运行实例。
 2. `demo`文件夹：修改`asearcher_demo.py` 进行对已有agent的适配，但目前不支持asearcherweaver（其demo位于evaluation/inferrence.py）
-3. `evaluation`文件夹：新增`fish.txt`, `fish1.txt`, `fish2.txt`项目demo，`inferrnce.py`模型推理代码，也是demo，`run_demo.sh`启动demo的脚本
+3. `evaluation`文件夹：`inferrnce.py`模型推理代码，也是demo，`run_demo.sh`启动demo的脚本
 
 # 快速体验
 1. 进入`evaluation`文件夹，在`eval_config.yaml`中填入api信息。
 2. 在`run_demo.sh`中`PYTHONPATH`填ASearcher项目路径，其余参数正常补充
 3. 进入`inferrence.py`在文件最后`prompt`变量中填入提示词
 4. 终端输入`./run_demo.sh`
-
-# 样例展示
-见agent/demo.txt
 
 # 代码结构
 1. `prompts.py`: 模型提示词。
