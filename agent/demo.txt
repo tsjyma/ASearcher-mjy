@@ -83,7 +83,7 @@ Turn 28 Retrieve (retrieve ids to get the summaries from memory bank, then they 
 Turn 29 Write (write the report with given summaries)
 given: <summary3><rationale>The user's goal is to find information relevant to answering a question. The entire provided content is about Dijkstra's algorithm. The most relevant sections are the detailed step-by-step description of the algorithm's process, the explanation of the accompanying illustration, and the complete pseudocode implementation with its explanation, as these form the core technical explanation of how the algorithm works.</rationale>\n    <evidence>\nThe algorithm requires a starting node, and computes the shortest distance from that starting node to each other node. Dijkstra's algorithm starts with infinite distances and tries to improve them step by step:\n\n1......
 <write>
-the content
+the full content is in agent/demo_report.md
 </write>
 
 ------------------------------------------------------------------------------------------------------------------------
