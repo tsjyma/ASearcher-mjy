@@ -132,6 +132,13 @@ class AsearcherWeaverAgent:
             return "<terminate>"
         return None
 
+    def get_write_terminate_from_text(self, text: str) -> Optional[str]:
+        pattern = r'<write_terminate>'
+        matches = re.findall(pattern, text, re.DOTALL)
+        if matches:
+            return "<write_terminate>"
+        return None
+
     def get_retrieve_from_text(self, text: str) -> Optional[str]:
         pattern = r'<retrieve>(.*?)</retrieve>'
         matches = re.findall(pattern, text, re.DOTALL)
@@ -309,6 +316,13 @@ class AsearcherWeaverAgent:
                     goal=self.write_goal,
                     outline=self.outline
                 )
+            elif process["history"][-1]["type"] == "answer":
+                process["phase"] = "answer"
+                prompt = ASearcherWeaverPlannerPrompt.ANSWER_PROMPT.format(
+                    question=process.get("question", process["prompt"]), 
+                    history=history, 
+                    report=self.report
+                )
             else:
                 raise RuntimeError(f"Not supported history type: {process['history'][-1]['type']}")
 
@@ -346,15 +360,15 @@ class AsearcherWeaverAgent:
         #     process.get("phase", "search") == "answer"
         # ])
         should_answer=False
+        if process["history"][-1]["type"] == "answer":
+            should_answer = True
         
         if should_answer:
             process["phase"] = "answer"
-            prompt = ASearcherWeaverPlannerPrompt.PLANNER_THINK_AND_ACT_PROMPT_v1.format(
+            prompt = ASearcherWeaverPlannerPrompt.ANSWER_PROMPT.format(
                 question=process.get("question", process["prompt"]), 
                 history=history,
-                current_date=datetime.now().strftime("%Y.%m.%d"),
-                outline=self.outline,
-                summaries=summaries
+                report=self.report
             )
         else:
             prompt = ASearcherWeaverPlannerPrompt.PLANNER_THINK_AND_ACT_PROMPT_v1.format(
@@ -421,6 +435,7 @@ class AsearcherWeaverAgent:
         extracted_url = self.get_url_from_text(generated_text)
         extracted_outline_token = self.get_write_outline_from_text(generated_text)
         extracted_terminate_token = self.get_terminate_from_text(generated_text)
+        extracted_write_terminate_token = self.get_write_terminate_from_text(generated_text)
         extracted_retrieve = self.get_retrieve_from_text(generated_text)
 
         id, extracted_summary = self.get_summary_from_text(generated_text) if self.get_summary_from_text(generated_text) else (None, None)
@@ -429,7 +444,7 @@ class AsearcherWeaverAgent:
 
         # update current report if extracted and call to retrieve
         if report is not None and len(report) > 0:
-            self.report += report
+            self.report = report
             process["history"].append(dict(
                 type="write", 
             ))
@@ -481,6 +496,8 @@ class AsearcherWeaverAgent:
                 tool_calls.append(extracted_outline_token)
             if extracted_retrieve:
                 tool_calls.append(extracted_retrieve)
+            if extracted_write_terminate_token:
+                tool_calls.append(extracted_write_terminate_token)
                     
             # Handle page cache
             if "page_cache" in process and len(process["page_cache"]) > 0:
@@ -610,6 +627,10 @@ class AsearcherWeaverAgent:
 
         elif res["type"] == "outline":
             process["history"].append(dict(type="write_outline"))
+
+        elif res["type"] == "answer":
+            process["history"].append(dict(type="answer"))
+            print("Switch to answer phase for", process["id"])
 
     def get_answer(self):
         """Get final answer from current process"""

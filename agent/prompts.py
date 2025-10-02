@@ -108,7 +108,7 @@ Next Action: ... // the next action to be completed
 
 ## **Task Guidelines**
 1. **Content Scanning for Rational**: Locate the **specific sections/data** directly related to the user's goal within the webpage content
-2. **Key Extraction for Evidence**: Identify and extract the **most relevant information** from the content, you never miss any important information, output the **full original context** of the content as far as possible, it can be more than three paragraphs.
+2. **Key Extraction for Evidence**: Identify and extract the **most relevant information** from the content, you never miss any important information, output the **full original context** of the content as far as possible.
 3. **Summary Output for Summary**: Organize into a concise paragraph with logical flow, prioritizing clarity and judge the contribution of the information to the goal.
 4. You'd better make the summary succinct, but it should cover all important information.
 
@@ -160,6 +160,7 @@ template finished
 Guidelines:
 1. You should carefully read the search results and extract useful information.
 2. Each summary is enclosed in <summary+id> </summary> tags. You should identify relevant summaries in the search results and cite their ids in the proper section of the outline. Note that the ids are integers, and these ids are behind "summary" in "<summary+id> </summary>" tags. The ids should be enclosed within <id> </id> tags and there is no space in "<id>id1</id>" group, e.g. <id>11</id>.
+3. There is no need to make the outline with too many sections as long as it can cover the probem comprehensively.
 
 Question:
 ```txt
@@ -184,6 +185,36 @@ Search results with summaries:
 Thought: ... // the thought to be completed
 """
 
+    ANSWER_PROMPT = \
+"""
+Given a question, you are an autonomous agent trying to solve the question with web browser. Given the question, the history context and the report for the question, generate the thought as well as the final answer. The completed thought should contain detailed analysis of available information. Enclose the thought within <thought> </thought> tags, and the answer within <answer> </answer> tags.
+
+Guideline:
+1. Determine the answer based on the the available information.
+2. Try to make your best guess if the found information is not enough.
+3. The final answer should be concise and clear. However, it should cover all important information.
+
+
+Question:
+```txt
+{question}
+```
+
+Reasoning history:
+```txt
+{history}
+```
+
+Report:
+```txt
+{report}
+```
+
+Thought: ... // the thought to be completed
+
+Final Answer: ... // the final answer
+"""
+
 class ASearcherWeaverWriterPrompt:
 
     RETRIEVE_PROMPT = \
@@ -199,7 +230,8 @@ Guidelines:
 2. You should describe which section you are retrieving the cited ids for in the goal.
 3. When you have already retrieved all cited ids in the outline, you should terminate the process.
 4. You can locate the next section to retrieve based on the last writing goal.
-5. The outline template is as follows:
+5. If the last writing goal is empty, you can locate the first section in the outline to retrieve.
+6. The outline template is as follows:
 Title:
 Section 1 <cite> <id>id1</id>, <id>id2</id>, ... </cite>:
     Subsections & other subpoints
@@ -238,8 +270,9 @@ Next Action: ... // the next action to be completed
 Guidelines:
 1. You should write one section at a time.
 2. You should carefully follow the outline and mark the current section you are writing in your report. 
-3. You should carefully follow and use the information in the retrieved information to write the section and cite them according to the information in the rational part of the retrieved information.
-4. The retrieved information contains the following parts:
+3. You should carefully follow and use the information in the retrieved information to write the section and cite them according to the information in the rational part of the retrieved information. However, you don't need to copy all the information, only use the important information to support your writing.
+4. You should make the report clear. There is no need to make the report too long, but it should cover all important information.
+5. The retrieved information contains the following parts:
     1. **Content Scanning for Rational**: Locate the **specific sections/data** directly related to the user's goal within the webpage content
     2. **Key Extraction for Evidence**: Identify and extract the **most relevant information** from the content, you never miss any important information, output the **full original context** of the content as far as possible, it can be more than three paragraphs.
     3. **Summary Output for Summary**: Organize into a concise paragraph with logical flow, prioritizing clarity and judge the contribution of the information to the goal.

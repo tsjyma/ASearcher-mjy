@@ -355,8 +355,14 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
 
                     elif tool_call["type"] == "write_terminate":
                         # Agent has decided to terminate writing
-                        process["outline"] = agent.outline if hasattr(agent, 'outline') else ""
-                        process["running"] = False
+                        process["report"] = agent.report if hasattr(agent, 'report') else ""
+                        agent_answer = {
+                            "type": "answer",
+                        }
+                        agent.consume_tool_response(agent_answer)
+                        process["history"].append({
+                            "type": "answer_activate"
+                        })
                         break
                     
                     elif tool_call["type"] == "answer":
@@ -434,7 +440,7 @@ async def main():
 
     prompt = \
 """
-How to learn deep learning?
+What is Dijkstra's algorithm and how does it work?
 """
 
     llm = AsyncVLLMClient(args.llm_url, args.model_name, args.api_key)
