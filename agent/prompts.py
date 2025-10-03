@@ -223,15 +223,16 @@ class ASearcherWeaverWriterPrompt:
 The next action could be one of the following two, each with specific tags and format:
 1. Retrieving the cited ids of summaries in a section of the outline from the memory bank, e.g. <retrieve> <id>id1</id>, <id>id2</id>, ... <goal> the goal to achieve by retrieving these ids </goal> </retrieve>
 
-2. Terminating the process, e.g. <write_terminate>
+2. Terminating the writing process, e.g. <write_terminate>
 
 Guidelines:
 1. You should retrieve the cited ids in the next one section.
 2. You should describe which section you are retrieving the cited ids for in the goal.
 3. When you have already retrieved all cited ids in the outline, you should terminate the process.
 4. You can locate the next section to retrieve based on the last writing goal.
-5. If the last writing goal is empty, you can locate the first section in the outline to retrieve.
-6. The outline template is as follows:
+5. If the last writing goal is empty, you can locate the first section in the outline to retrieve. When the last writing goal is to write the last section in the outline, you should output <write_terminate>.
+6. Before you terminate the writing process, you should make sure you have already written all sections in the outline. You can check it based on the last writing goal and the current report.
+7. The outline template is as follows:
 Title:
 Section 1 <cite> <id>id1</id>, <id>id2</id>, ... </cite>:
     Subsections & other subpoints
@@ -249,9 +250,9 @@ Last writing goal:
 {goal}
 ```
 
-Reasoning history:
+Current Report:
 ```txt
-{history}
+{report}
 ```
 
 Outline:

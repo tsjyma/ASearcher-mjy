@@ -304,7 +304,6 @@ class AsearcherWeaverAgent:
             elif process["history"][-1]["type"] == "retrieve":
                 prompt = ASearcherWeaverWriterPrompt.WRITE_PROMPT.format(
                     question=process.get("question", process["prompt"]), 
-                    history=history, 
                     retrieved_info=process["history"][-1]["summaries"],
                     goal=process["history"][-1]["goal"],
                     outline=self.outline
@@ -312,7 +311,7 @@ class AsearcherWeaverAgent:
             elif process["history"][-1]["type"] == "write":
                 prompt = ASearcherWeaverWriterPrompt.RETRIEVE_PROMPT.format(
                     question=process.get("question", process["prompt"]), 
-                    history=history, 
+                    report=self.report, 
                     goal=self.write_goal,
                     outline=self.outline
                 )
