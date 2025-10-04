@@ -20,7 +20,7 @@ Guidelines:
 6. Carefully select the type of language to conduct your search query (Chinese or English)
 7. You should describe a clear goal when accessing a url including what you want to find or verify.
 8. When you already have an outline, you should still try to search and access to make the outline more comprehensive.
-9. You should terminate the process when you have already written a comprehensive outline.
+9. You should terminate the process when you have already written a comprehensive outline. Make sure you have already written a comprehensive outline before terminating the process.
 10. Be careful when you write the outline, it should be comprehensive enough to cover all aspects of the question, which means you'd better access enough urls before writing the outline.
 
 Current Time: Today is {current_date} 
@@ -160,7 +160,7 @@ template finished
 Guidelines:
 1. You should carefully read the search results and extract useful information.
 2. Each summary is enclosed in <summary+id> </summary> tags. You should identify relevant summaries in the search results and cite their ids in the proper section of the outline. Note that the ids are integers, and these ids are behind "summary" in "<summary+id> </summary>" tags. The ids should be enclosed within <id> </id> tags and there is no space in "<id>id1</id>" group, e.g. <id>11</id>.
-3. There is no need to make the outline with too many sections as long as it can cover the probem comprehensively.
+3. There is no need to make the outline with too many sections as long as it can cover the probem comprehensively. An outline with 3-5 sections is usually good enough, but for some complex questions, more sections may be needed.
 
 Question:
 ```txt
@@ -266,12 +266,12 @@ Next Action: ... // the next action to be completed
 """
 
     WRITE_PROMPT = \
-"""Given a question, a report outline, and a set of retrieved information for reference, you are an autonomous agent trying to generate a report for the question. Use the information from the memory bank and the outline to construct a comprehensive response. Given the question and retrieved information, you should finish a section in the outline described in the goal. The written part should be enclosed within <write> </write> tags. Enclose the thought within <thought> </thought> tags.
+"""Given a question, a report outline, a writing goal and a set of retrieved information for reference, you are an autonomous agent trying to generate a report for the question. The retrieved information are summaries enclosed within <summaryid> </summary> tags. Your task is to write a section based on the goal and you should precisely cite the ids of the summary. The id of the summary can be find in the tag of the summary. Enclose the written part within <write> </write> tags. Enclose the thought within <thought> </thought> tags.
 
 Guidelines:
 1. You should write one section at a time.
 2. You should carefully follow the outline and mark the current section you are writing in your report. 
-3. You should carefully follow and use the information in the retrieved information to write the section and cite them according to the information in the rational part of the retrieved information. However, you don't need to copy all the information, only use the important information to support your writing.
+3. You should carefully follow and use the summaries in the retrieved information to write the section and cite them according to the information in the rational part of the retrieved information. The summaries are enclosed within <summaryid> </summary> tags (the id in the first tag will be a number e.g. <summary2>). You should cite the ids of the summaries, which can be found in the <summaryid> tag. However, you don't need to copy all the information, only use the important information to support your writing.
 4. You should make the report clear. There is no need to make the report too long, but it should cover all important information.
 5. The retrieved information contains the following parts:
     1. **Content Scanning for Rational**: Locate the **specific sections/data** directly related to the user's goal within the webpage content

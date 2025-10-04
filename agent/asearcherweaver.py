@@ -69,13 +69,16 @@ class AsearcherWeaverAgent:
         # memory bank for extracted summaries
         self.memory_bank = {}
 
+        # store the goal of summary
+        self.summary_goal = "Extract relevant information to answer the question."
+
         # Store the current outline
         self.outline = ""
 
         # Store the report
         self.report = ""
         self.write_goal = "Write the first section of the report based on the outline."
-        
+
         # Agent initialized
 
     def get_query_from_text(self, text: str) -> Optional[str]:
@@ -188,6 +191,7 @@ class AsearcherWeaverAgent:
             process["phase"] = "search"
             process["outline"] = ""
             process["report"] = ""
+            process["final_answer"] = ""
         self.current_process = copy.deepcopy(process)
     
     def set_tokenizer(self, tokenizer):
@@ -234,7 +238,7 @@ class AsearcherWeaverAgent:
         if not process.get("running", False):
             return "", {"stop": self.stop}
         
-        print(f"Preparing LLM query for process {process['id']} with {len(process['history'])} history items.")
+        # print(f"Preparing LLM query for process {process['id']} with {len(process['history'])} history items.")
         print(f"History types: {process['history'][-1]['type']}\n"+"-"*50)
 
         # Handle reading mode - when we have info_str but no text
@@ -246,10 +250,11 @@ class AsearcherWeaverAgent:
                 history = history[-25000:]
             
             if process["history"][-1]["type"] == "page":
+                # print(self.summary_goal)
                 prompt = ASearcherWeaverPlannerPrompt.READ_PAGE_PROMPT.format(
                     question=process.get("question", process["prompt"]), 
                     history=history, 
-                    goal=process["history"][-1].get("goal", "Find relevant information to answer the question."),
+                    goal=self.summary_goal,
                     page=process["history"][-1].get("info_str", 1)
                 )
                 # print(f"Summary prompt:\n{prompt[:200]}\n"+"-"*50)
@@ -488,7 +493,9 @@ class AsearcherWeaverAgent:
             if extracted_url:
                 tool_calls.append(extracted_url)
             if extracted_answer:
+                # print("Final answer for", process["id"], ":", extracted_answer, flush=True)
                 tool_calls.append(extracted_answer)
+                process["pred_answer"]= extracted_answer
             if extracted_terminate_token:
                 tool_calls.append(extracted_terminate_token)
             if extracted_outline_token:
@@ -578,6 +585,7 @@ class AsearcherWeaverAgent:
             # Handle webpage access results
             page = res.get("page", "")
             goal = res.get("goal", "Find relevant information to answer the question.")
+            self.summary_goal = goal
             
             if page and len(page) > 0:
                 page = page[:250000]
