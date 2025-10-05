@@ -22,6 +22,7 @@ Guidelines:
 8. When you already have an outline, you should still try to search and access to make the outline more comprehensive.
 9. You should terminate the process when you have already written a comprehensive outline. Make sure you have already written a comprehensive outline before terminating the process.
 10. Be careful when you write the outline, it should be comprehensive enough to cover all aspects of the question, which means you'd better access enough urls before writing the outline.
+11. You'd better write the outline after you have enough information. For difficult questions, you may need to search and access more than 10 times before writing the outline.
 
 Current Time: Today is {current_date} 
 
@@ -161,6 +162,7 @@ Guidelines:
 1. You should carefully read the search results and extract useful information.
 2. Each summary is enclosed in <summary+id> </summary> tags. You should identify relevant summaries in the search results and cite their ids in the proper section of the outline. Note that the ids are integers, and these ids are behind "summary" in "<summary+id> </summary>" tags. The ids should be enclosed within <id> </id> tags and there is no space in "<id>id1</id>" group, e.g. <id>11</id>.
 3. There is no need to make the outline with too many sections as long as it can cover the probem comprehensively. An outline with 3-5 sections is usually good enough, but for some complex questions, more sections may be needed.
+4. It's good to cite more summaries to support your outline, but make sure the cited summaries are really relevant to the section. You'd better cite at least one summary in each section.
 
 Question:
 ```txt
@@ -205,6 +207,11 @@ Reasoning history:
 {history}
 ```
 
+Outline of the report:
+```txt
+{outline}
+```
+
 Report:
 ```txt
 {report}
@@ -232,7 +239,8 @@ Guidelines:
 4. You can locate the next section to retrieve based on the last writing goal.
 5. If the last writing goal is empty, you can locate the first section in the outline to retrieve. When the last writing goal is to write the last section in the outline, you should output <write_terminate>.
 6. Before you terminate the writing process, you should make sure you have already written all sections in the outline. You can check it based on the last writing goal and the current report.
-7. The outline template is as follows:
+7. If there is no citation in a section, you don't need to retrieve the ids, just output the goal part.
+8. The outline template is as follows:
 Title:
 Section 1 <cite> <id>id1</id>, <id>id2</id>, ... </cite>:
     Subsections & other subpoints

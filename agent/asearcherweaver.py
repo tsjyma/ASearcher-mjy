@@ -316,7 +316,7 @@ class AsearcherWeaverAgent:
             elif process["history"][-1]["type"] == "write":
                 prompt = ASearcherWeaverWriterPrompt.RETRIEVE_PROMPT.format(
                     question=process.get("question", process["prompt"]), 
-                    report=self.report, 
+                    report=process.get("report", self.report), 
                     goal=self.write_goal,
                     outline=self.outline
                 )
@@ -325,7 +325,8 @@ class AsearcherWeaverAgent:
                 prompt = ASearcherWeaverPlannerPrompt.ANSWER_PROMPT.format(
                     question=process.get("question", process["prompt"]), 
                     history=history, 
-                    report=self.report
+                    report=process.get("report", self.report),
+                    outline=self.outline
                 )
             else:
                 raise RuntimeError(f"Not supported history type: {process['history'][-1]['type']}")
@@ -372,7 +373,8 @@ class AsearcherWeaverAgent:
             prompt = ASearcherWeaverPlannerPrompt.ANSWER_PROMPT.format(
                 question=process.get("question", process["prompt"]), 
                 history=history,
-                report=self.report
+                report=self.report,
+                outline=self.outline
             )
         else:
             prompt = ASearcherWeaverPlannerPrompt.PLANNER_THINK_AND_ACT_PROMPT_v1.format(
