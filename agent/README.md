@@ -7,7 +7,7 @@
 为了解决这样的问题，我们提出了新的摘要机制**summary with goal**，新的摘要管理机制**memory bank**，新的引用与报告模式**planner and writer**，结合这三点改进与原有的ASearcher框架，我们提出了新的agent，**ASearcherWeaver**。
 
 ### ASearcherWeaver 工作流程
-overview: start -> Planner Phase -> Writer Phase -> terminate
+overview: start -> Planner Phase -> Writer Phase -> Answer Phase
 1. **Planner Phase**: agent 进行search, access, summary与write outline几种操作，为后续的report (write phase)完成一份全面的大纲，并不断改进大纲的质量。
 
    (1) search: agent给出搜索词，通过搜索引擎进行搜索，返回搜索结果
@@ -24,7 +24,9 @@ overview: start -> Planner Phase -> Writer Phase -> terminate
 
    (2) write: 根据outline，摘要与给出的要完成的章节信息，完成对应章节的写作
 
-总流程：start -> ( (search -> access -> summary) * n -> write_outline ) * m -> terminate -> ( retrieve -> write ) -> write_terminate
+3. **Answer Phase**: 根据report, outline, history等信息，agent输出题目的最终答案
+
+总流程：start -> ( (search -> access -> summary) * n -> write_outline ) * m -> terminate -> ( retrieve -> write ) -> write_terminate -> answer
 
 ### 机制介绍
 1. **summary with goal** 重点为了解决摘要质量的问题。我们提出让agent阅读网页信息，生成摘要之前，提出自己阅读网页的目标goal，之后，在agent生成摘要时，我们并不将历史信息提供给agent，而是只将网页信息和目标提供给agent，使其专注在当前浏览的网页，防止其未准确引用相关链接；同时，这种机制也防止了agent阅读网页时没有侧重点的问题，goal可以明确给出agent阅读网页的指引，也可以让摘要对任务更有帮助；另外，为了进一步提高摘要质量，在设计提示词时，我们要求agent根据goal给出准确的Rational（给出网页内容中与goal直接相关的部分的位置），Evidence（给出与goal最相关的信息），Summary（给出摘要），这样可以进一步保证生成内容和网页信息相关。
@@ -43,7 +45,7 @@ overview: start -> Planner Phase -> Writer Phase -> terminate
 4. planner and writer: planner停止会输出“terminate” token 而后通过原有的history机制强制进入writer阶段
 
 ### 运行效果
-样例见agent/demo.txt
+样例见agent/demo.txt, agent/demo_report.md (题目来源ASearcher论文), agent/demo_report2.md (题目来源HLE)
 
 # 修改内容
 1. `agent`文件夹：新增`asearcherweaver.py`agent相关代码， `prompts.py` 提示词，`README.md`项目整体介绍，`demo.txt`项目运行实例。
