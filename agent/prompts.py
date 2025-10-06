@@ -280,7 +280,7 @@ Guidelines:
 1. You should write one section at a time.
 2. You should carefully follow the outline and mark the current section you are writing in your report. 
 3. You should carefully follow and use the summaries in the retrieved information to write the section and cite them according to the information in the rational part of the retrieved information. The summaries are enclosed within <summaryid> </summary> tags (the id in the first tag will be a number e.g. <summary2>). You should cite the ids of the summaries, which can be found in the <summaryid> tag. However, you don't need to copy all the information, only use the important information to support your writing.
-4. You should make the report clear. There is no need to make the report too long, but it should cover all important information.
+4. You should make the report clear and concise. There is no need to make the report too long, but it should cover all important information.
 5. The retrieved information contains the following parts:
     1. **Content Scanning for Rational**: Locate the **specific sections/data** directly related to the user's goal within the webpage content
     2. **Key Extraction for Evidence**: Identify and extract the **most relevant information** from the content, you never miss any important information, output the **full original context** of the content as far as possible, it can be more than three paragraphs.

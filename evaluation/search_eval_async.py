@@ -582,12 +582,15 @@ async def process_single_llm_query(llm, tokenizer, prompt: str, sampling_params:
     
     try:
         output = await llm.async_generate(prompt, sampling_kwargs)
+        # print("[DEBUG] LLM output:", output)
     except ValueError as e:
         print("ValueError when handling query {}".format(qid))
         raise e
 
     # Create compatible response object for agent v2
     text = output['text'] if isinstance(output, dict) else output
+    if not text:
+        print("Empty response from LLM for query {}".format(qid))
     
     # Post-process: truncate at first complete tool call for tool generation mode
     if sampling_params.get("stop") and sampling_params["stop"] != ["</think>"]:
@@ -635,7 +638,11 @@ def truncate_at_first_complete_tool_call(text: str) -> str:
     patterns = [
         r'(<search>.*?</search>)',
         r'(<access>.*?</access>)', 
-        r'(<answer>.*?</answer>)'
+        r'(<answer>.*?</answer>)',
+        r'(<terminate>)',
+        r'(<write_outline>)',
+        r'(<retrieve>)',
+        r'(<write_terminate>)'
     ]
     
     earliest_end = len(text)

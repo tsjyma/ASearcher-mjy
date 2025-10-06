@@ -178,9 +178,9 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                 # Get LLM query from agent
                 prompt_or_messages, sampling_params = agent.prepare_llm_query()
 
-                # print(f"Process {process['id']} Turn {agent.num_turns+1} LLM Query:\n{prompt_or_messages if isinstance(prompt_or_messages, str) else prompt_or_messages[-1]['content']}\n{'-'*50}")
+                print(f"Process {process['id']} Turn {agent.num_turns+1} LLM Query:\n{prompt_or_messages if isinstance(prompt_or_messages, str) else prompt_or_messages[-1]['content']}\n{'-'*50}")
 
-                assert not agent.is_finished
+                # assert not agent.is_finished
 
                 if isinstance(prompt_or_messages, str):
                     prompt = prompt_or_messages
@@ -206,7 +206,7 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
 
                 print(tool_calls)
                 # print("agent.isfinished:", agent.is_finished)
-                assert not agent.is_finished
+                # assert not agent.is_finished
                 
                 # Log progress
                 if tool_calls:
@@ -369,6 +369,16 @@ async def process_single_work_item(semaphore, agent_type, llm, tokenizer, search
                         # Agent has provided final answer
                         process["pred_answer"] = tool_call["content"]
                         process["running"] = False
+                        # save final state
+                        with open(os.path.join(out_dir, f"{process['id']}.json"), "w") as f:
+                            # Include agent memory for debugging
+                            process_copy = process.copy()
+                            if hasattr(agent, "current_process"):
+                                process_copy = agent.current_process.copy()
+                            if hasattr(agent, 'memory') and agent.memory:
+                                process_copy["agent_memory"] = agent.memory.to_dict()
+                                process_copy["agent_stats"] = agent.memory.logging_stats()
+                            json.dump(process_copy, f, ensure_ascii=False)
                         break
                 
                 process["num_turns"] = agent.num_turns
@@ -440,7 +450,8 @@ async def main():
 
     prompt = \
 """
-What is Dijkstra's algorithm and how does it work?
+What animals that were mentioned in:
+both Ilias Lagkouvardos's and Olga Tapia's papers on the alvei species of the genus named for Copenhagen outside the bibliographies and also in the 2021 article cited on the alvei species' Wikipedia page about a multicenter, randomized, double-blind study?
 """
 
     llm = AsyncVLLMClient(args.llm_url, args.model_name, args.api_key)

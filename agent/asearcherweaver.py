@@ -191,7 +191,6 @@ class AsearcherWeaverAgent:
             process["phase"] = "search"
             process["outline"] = ""
             process["report"] = ""
-            process["final_answer"] = ""
         self.current_process = copy.deepcopy(process)
     
     def set_tokenizer(self, tokenizer):
@@ -454,7 +453,7 @@ class AsearcherWeaverAgent:
             process["history"].append(dict(
                 type="write", 
             ))
-            process["report"] += self.report
+            process["report"] += "\n\n" + self.report
 
         # Update current outline if extracted
         if outline is not None and len(outline) > 0:
@@ -495,7 +494,7 @@ class AsearcherWeaverAgent:
             if extracted_url:
                 tool_calls.append(extracted_url)
             if extracted_answer:
-                # print("Final answer for", process["id"], ":", extracted_answer, flush=True)
+                print("Final answer for", process["id"], ":", extracted_answer, flush=True)
                 tool_calls.append(extracted_answer)
                 process["pred_answer"]= extracted_answer
             if extracted_terminate_token:
