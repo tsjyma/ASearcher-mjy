@@ -42,9 +42,9 @@ The primary focus of Ilias Lagkouvardos's paper is the microbiota of Gidotyri, a
 The paper by Olga Tapia and colleagues discusses *Hafnia alvei* as an opportunistic pathogen in broad animal categories, including mammals, fish, birds, and insects <cite><id>10</id></cite>. The analysis of strain sources provides more specific animal mentions. These include fish (from fish meat and spoiled turbot), sea cucumber, and implied mammals and birds from food products like cooled raw milk and vacuum-packed meat <cite><id>11</id></cite>. The main text also explicitly names specific fish species, such as tuna and salmon, in the context of food spoilage and biogenic amine production <cite><id>12</id></cite>. Furthermore, strains were isolated from the intestinal microbiota of rainbow trout (*Oncorhynchus mykiss*) and the honey bee gut <cite><id>13</id></cite>. A key specific mention is the use of a *H. alvei* strain as a probiotic in a mouse model for hyperphagic obesity <cite><id>14</id></cite>.
 
 tags and keep it clear and concise, covering the important points from the outline.
-</thought>
-<write>
-**Section 3: Analysis of the 2021 Multicenter, Randomized, Double-Blind Study by Déchelotte et al.**
+
+## Section 3: Analysis of the 2021 Multicenter, Randomized, Double-Blind Study by Déchelotte et al.
+
 The 2021 article by Déchelotte et al. describes a clinical trial involving human subjects <cite><id>4</id>, <id>6</id></cite>. Specifically, it was a "prospective, multicenter, double-blind, placebo-controlled and randomized study in 236 overweight volunteers" <cite><id>4</id></cite>. The primary "animal" context of this study is therefore the human. The publication also notes that the clinical results "confirmed the preclinical data," which typically refers to foundational research conducted in animal models such as mice <cite><id>4</id></cite>.
 
 ## Section 4: Intersection of Animals Mentioned in All Three Papers
