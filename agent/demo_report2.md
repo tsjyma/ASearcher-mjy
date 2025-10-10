@@ -8,24 +8,24 @@ Which physicist better known for work in the microscopy field discovered an opti
 Title: The Accidental Discovery of the Mirascope: Virgil Elings and Caliste Landry
 
 Section 1 <cite> <id>3</id> </cite>: Introduction and Key Figures
-    - Virgil Elings: Physicist known for microscopy work
-    - Caliste Landry: Custodial worker at UC Santa Barbara
-    - Historical context: UC Santa Barbara physics department, circa 1969
+- Virgil Elings: Physicist known for microscopy work
+- Caliste Landry: Custodial worker at UC Santa Barbara
+- Historical context: UC Santa Barbara physics department, circa 1969
 
 Section 2 <cite> <id>3</id> </cite>: The Accidental Discovery
-    - Landry's observation while cleaning stacked WWII searchlight reflectors
-    - The "floating dust" phenomenon that couldn't be cleaned
-    - Landry's report to faculty member Virgil Elings
+- Landry's observation while cleaning stacked WWII searchlight reflectors
+- The "floating dust" phenomenon that couldn't be cleaned
+- Landry's report to faculty member Virgil Elings
 
 Section 3 <cite> <id>3</id> </cite>: Optical Principles of the Mirascope
-    - Elings' analysis of the two-mirror configuration
-    - How parabolic mirrors create real images
-    - The specific optical effect observed (real imagery formation)
+- Elings' analysis of the two-mirror configuration
+- How parabolic mirrors create real images
+- The specific optical effect observed (real imagery formation)
 
 Section 4 <cite> <id>3</id> </cite>: Commercialization and Legacy
-    - Patent awarded to Elings and Landry in 1971
-    - Acquisition by Opti-Gone International and marketing as "Mirage"
-    - Significance as Elings' first patent preceding his microscopy work
+- Patent awarded to Elings and Landry in 1971
+- Acquisition by Opti-Gone International and marketing as "Mirage"
+- Significance as Elings' first patent preceding his microscopy work
 
 ---------------------------------------------
 

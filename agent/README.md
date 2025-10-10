@@ -45,7 +45,7 @@ overview: start -> Planner Phase -> Writer Phase -> Answer Phase
 4. planner and writer: planner停止会输出“terminate” token 而后通过原有的history机制强制进入writer阶段
 
 ### 运行效果
-样例见agent/demo.txt, agent/demo_report.md (题目来源ASearcher论文), agent/demo_report2.md (题目来源HLE)
+样例见agent/demo.txt, agent/demo_report.md (题目来源ASearcher论文), agent/demo_report2.md (题目来源HLE) 
 
 # 修改内容
 1. `agent`文件夹：新增`asearcherweaver.py`agent相关代码， `prompts.py` 提示词，`README.md`项目整体介绍，`demo.txt`项目运行实例。

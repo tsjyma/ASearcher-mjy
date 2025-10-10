@@ -1,13 +1,13 @@
 class ASearcherWeaverPlannerPrompt:
     PLANNER_THINK_AND_ACT_PROMPT_v1 =  \
-"""Given a question, you are an autonomous agent trying to generate an outline of a report for the question with web browser. Given the question and the history context, generate the thought as well as the next action (only one action). The completed thought should contain analysis of available information and planning for future steps. Enclose the thought within <thought> </thought> tags. 
+"""Given a question, you are an autonomous agent trying to solve the question with web browser. You need to write an outline and report before you answer the question. Now, you need to search for information to support your answer. After you get enough information, you should write an outline to represent your chain of thought to organize the information to solve the problem. Given the question and the history context, generate the thought as well as the next action (only one action). The completed thought should contain analysis of available information and planning for future steps. Enclose the thought within <thought> </thought> tags. 
 
 The next action could be one of the following four, each with specific tags and format:
 1. Search w. a search engine, e.g. <search> the search query </search>
 
 2. Accessing some url found in prior history while demostrating the goal, e.g. <access> the url to access <goal> the goal to achieve by accessing this url </goal> </access>
 
-3. Writing an outline of the report, e.g. <write_outline>
+3. Writing an outline, which represent your chain of thought to solve the question, then, you will write a report based on the outline, e.g. <write_outline>
 
 4. Terminating the process, e.g. <terminate> 
 
@@ -99,7 +99,10 @@ Next Action: ... // the next action to be completed
 """
 
     READ_PAGE_PROMPT = \
-"""Please process the following webpage content and user goal to extract relevant information in your summary. The summary should be enclosed within <summary> </summary> tags. Enclose the thought within <thought> </thought> tags. :
+"""Given a question, you are an autonomous agent trying to solve the question with web browser. Now, you need to search for information to support your answer. Please process the following webpage content and user goal to extract relevant information in your summary. The summary should be enclosed within <summary> </summary> tags. Enclose the thought within <thought> </thought> tags. :
+
+## **Question**
+{question}
 
 ## **Webpage Content** 
 {page}
@@ -119,7 +122,7 @@ Thought: ... // the thought to be completed
 """
 
     READ_SEARCH_RESULTS_PROMPT =  \
-"""Given a question, you are an autonomous agent trying to generate an outline of a report for the question with web browser. Given the question, the history context, and the search results of the latest query, generate a thought after reading the search results. The completed thought should contain information found related to the question, relevant links from the latest search results that may help solve the question, and detailed analysis of available information. Enclose the thought within <thought> </thought> tags.
+"""Given a question, you are an autonomous agent trying to solve the question with web browser. You need to write an outline and report before you answer the question. Now, you need to search for information to support your answer. Given the question, the history context, and the search results of the latest query, generate a thought after reading the search results. The completed thought should contain information found related to the question, relevant links from the latest search results that may help solve the question, and detailed analysis of available information. Enclose the thought within <thought> </thought> tags.
 
 Question:
 ```txt
@@ -145,7 +148,7 @@ Thought: ... // the thought to be completed
 """
 
     WRITE_OUTLINE_PROMPT = \
-"""Given a question, you are an autonomous agent trying to generate an outline of a report for the question with web browser. Given the question, the history context (including the summaries you need to cite), and the current outline, generate a more comprehensive outline. The outline part should be enclosed within <outline> </outline> tags. Enclose the thought within <thought> </thought> tags.
+"""Given a question, you are an autonomous agent trying to solve the question with web browser. You need to write an outline and report before you answer the question. Given the question, the history context (including the summaries you need to cite), and the current outline, generate a more comprehensive outline. The outline should represent your chain of thought to solve the question. The outline part should be enclosed within <outline> </outline> tags. Enclose the thought within <thought> </thought> tags.
 
 Here is the template:
 <outline>
@@ -161,7 +164,7 @@ template finished
 Guidelines:
 1. You should carefully read the search results and extract useful information.
 2. Each summary is enclosed in <summary+id> </summary> tags. You should identify relevant summaries in the search results and cite their ids in the proper section of the outline. Note that the ids are integers, and these ids are behind "summary" in "<summary+id> </summary>" tags. The ids should be enclosed within <id> </id> tags and there is no space in "<id>id1</id>" group, e.g. <id>11</id>.
-3. There is no need to make the outline with too many sections as long as it can cover the probem comprehensively. An outline with 3-5 sections is usually good enough, but for some complex questions, more sections may be needed.
+3. There is no need to make the outline with too many sections as long as it can cover the probem comprehensively. An outline with 1-4 sections is usually good enough, but for some complex questions, more sections may be needed. You only need to keep the sections critical to the question.
 4. It's good to cite more summaries to support your outline, but make sure the cited summaries are really relevant to the section. You'd better cite at least one summary in each section.
 
 Question:
@@ -280,7 +283,7 @@ Guidelines:
 1. You should write one section at a time.
 2. You should carefully follow the outline and mark the current section you are writing in your report. 
 3. You should carefully follow and use the summaries in the retrieved information to write the section and cite them according to the information in the rational part of the retrieved information. The summaries are enclosed within <summaryid> </summary> tags (the id in the first tag will be a number e.g. <summary2>). You should cite the ids of the summaries, which can be found in the <summaryid> tag. However, you don't need to copy all the information, only use the important information to support your writing.
-4. You should make the report clear and concise. There is no need to make the report too long, but it should cover all important information.
+4. You should make the report clear and concise. There is no need to use all information in the summaries and make the report too long, but it should cover all important information. 
 5. The retrieved information contains the following parts:
     1. **Content Scanning for Rational**: Locate the **specific sections/data** directly related to the user's goal within the webpage content
     2. **Key Extraction for Evidence**: Identify and extract the **most relevant information** from the content, you never miss any important information, output the **full original context** of the content as far as possible, it can be more than three paragraphs.

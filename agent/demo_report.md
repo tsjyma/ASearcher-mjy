@@ -7,41 +7,41 @@ both Ilias Lagkouvardos's and Olga Tapia's papers on the alvei species of the ge
 # Final outline:
 
 Section 1 <cite> <id>7</id>, <id>17</id>, <id>18</id>, <id>24</id> </cite>:
-    Introduction to Hafnia alvei and Research Context
-    - Overview of Hafnia alvei as a bacterium of interest in food science and medicine
-    - Explanation of the three key publications analyzed: Lagkouvardos (2023), Tapia (2022), and Déchelotte (2021)
-    - Research focus on animal mentions excluding bibliographies
+Introduction to Hafnia alvei and Research Context
+- Overview of Hafnia alvei as a bacterium of interest in food science and medicine
+- Explanation of the three key publications analyzed: Lagkouvardos (2023), Tapia (2022), and Déchelotte (2021)
+- Research focus on animal mentions excluding bibliographies
 
 Section 2 <cite> <id>7</id>, <id>9</id>, <id>10</id> </cite>:
-    Animal Mentions in Lagkouvardos et al. (2023) on Gidotyri Cheese
-    - Goats as primary milk source for artisanal Gidotyri cheese where H. alvei was found
-    - Cows and sheep as potential alternative milk sources for similar cheeses
-    - Mice mentioned in context of H. alvei's anti-obesity properties (Table 1)
-    - Connection between animal-derived dairy products and H. alvei prevalence
+Animal Mentions in Lagkouvardos et al. (2023) on Gidotyri Cheese
+- Goats as primary milk source for artisanal Gidotyri cheese where H. alvei was found
+- Cows and sheep as potential alternative milk sources for similar cheeses
+- Mice mentioned in context of H. alvei's anti-obesity properties (Table 1)
+- Connection between animal-derived dairy products and H. alvei prevalence
 
 Section 3 <cite> <id>17</id>, <id>18</id>, <id>19</id>, <id>20</id>, <id>21</id> </cite>:
-    Animal Mentions in Tapia et al. (2022) Review on H. alvei in Foods
-    - H. alvei as common inhabitant of digestive tracts of many animal species
-    - Opportunistic pathogen in mammals, fish, birds, and insects
-    - Specific animal sources: rainbow trout gut, honey bee gut
-    - Research models: zebrafish, mice, Galleria mellonella worm
-    - Food contamination contexts: meat, fish, seafood (tuna, salmon), dairy products
-    - Human health applications and endothelial cell studies
+Animal Mentions in Tapia et al. (2022) Review on H. alvei in Foods
+- H. alvei as common inhabitant of digestive tracts of many animal species
+- Opportunistic pathogen in mammals, fish, birds, and insects
+- Specific animal sources: rainbow trout gut, honey bee gut
+- Research models: zebrafish, mice, Galleria mellonella worm
+- Food contamination contexts: meat, fish, seafood (tuna, salmon), dairy products
+- Human health applications and endothelial cell studies
 
 Section 4 <cite> <id>24</id>, <id>25</id>, <id>26</id>, <id>27</id>, <id>28</id> </cite>:
-    Animal Mentions in Déchelotte et al. (2021) Clinical Trial
-    - Primary focus on human subjects in multicenter randomized double-blind study
-    - 236 overweight human participants in clinical trial
-    - Reference to preclinical studies in mouse models of obesity
-    - Mention of "obese rodents" in discussion section as background research
-    - Human-specific measurements and clinical parameters
+Animal Mentions in Déchelotte et al. (2021) Clinical Trial
+- Primary focus on human subjects in multicenter randomized double-blind study
+- 236 overweight human participants in clinical trial
+- Reference to preclinical studies in mouse models of obesity
+- Mention of "obese rodents" in discussion section as background research
+- Human-specific measurements and clinical parameters
 
 Section 5 <cite> <id>7</id>, <id>10</id>, <id>17</id>, <id>18</id>, <id>21</id>, <id>24</id>, <id>27</id> </cite>:
-    Intersection Analysis: Animals Mentioned in All Three Publications
-    - Humans: Common to Tapia (2022) and Déchelotte (2021)
-    - Mice: Common to all three publications (Lagkouvardos, Tapia, Déchelotte)
-    - Contextual differences in animal mentions across publications
-    - Research implications of animal model usage in H. alvei studies
+Intersection Analysis: Animals Mentioned in All Three Publications
+- Humans: Common to Tapia (2022) and Déchelotte (2021)
+- Mice: Common to all three publications (Lagkouvardos, Tapia, Déchelotte)
+- Contextual differences in animal mentions across publications
+- Research implications of animal model usage in H. alvei studies
 
 ---------------------------------------------
 
